@@ -13,7 +13,6 @@ caps:
   categories:
     TV: TV
     Movies: Movies
-    Anime: Anime
 
   modes:
     search: [q]  # Required - DO NOT TOUCH!
@@ -24,11 +23,15 @@ settings:
   - name: default_opts
     type: text
     label: Torrentio Options
-    default: "https://torrentio.strem.fun/sort=qualitysize|qualityfilter=480p,scr,cam/manifest.json"
+    default: "stremio://torrentio.strem.fun/sort=qualitysize|qualityfilter=480p,scr,cam/manifest.json"
     required: true
     filters:
-      - name: split
-        args: ["\/", 3]
+      - name: re_replace
+        args: ["stremio:\/\/torrentio.strem.fun\/", ""]
+      - name: re_replace
+        args: ["https:\/\/torrentio.strem.fun\/", ""]
+      - name: re_replace
+        args: ["\/manifest.json", ""]
 
 search:
   paths:
