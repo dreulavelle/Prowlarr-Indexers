@@ -16,8 +16,9 @@ caps:
 
   modes:
     search: [q]
-    tv-search: [q, imdbid]
+    tv-search: [q, season, ep, imdbid]
     movie-search: [q, imdbid]
+  allowrawsearch: false
 
 settings:
   - name: opt_label
@@ -27,21 +28,14 @@ settings:
     type: text
     label: Torrentio Options
     default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|sort=quality|limit=5"
-  # - name: path_label
-  #   type: info
-  #   label: For Debug Purposes Only!
-  # - name: path_value
-  #   type: text
-  #   label: End of URL for Request (must end in .json)
-  #   default: stream/search/tt0012189.json
 
 search:
   paths:
-    - path: "{{ .Config.default_opts }}/stream/search/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}.json{{ else }}tt0137523.json{{ end }}"
+    - path: "{{ .Config.default_opts }}/{{ if or .Query.Season .Query.Ep }}stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}stream/movie/{{ .Query.IMDBID }}.json{{ end }}"
       method: get
       response:
         type: json
-        noResultsMessage: ""
+        noResultsMessage: '"streams": []'
 
   rows:
     selector: streams
