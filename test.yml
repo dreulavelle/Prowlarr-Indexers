@@ -5,35 +5,25 @@ description: "Torrentio Indexer for Real-Debrid Cached Hashes"
 language: en-US
 type: public
 encoding: UTF-8
-requestDelay: 15
+requestDelay: 2
 links:
     - https://torrentio.strem.fun/
 
 caps:
   categories:
-    Movies: Movies
     TV: TV
+    Movies: Movies
 
   modes:
-    search: [q]
+    search: [q]  # Required - DO NOT TOUCH!
     tv-search: [q, imdbid]
     movie-search: [q, imdbid]
 
 settings:
-  - name: opt_label
-    type: info
-    label: You can clear the options if you want no options to be set.
   - name: default_opts
     type: text
     label: Torrentio Options
-    default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|sort=quality|limit=5"
-  # - name: path_label
-  #   type: info
-  #   label: For Debug Purposes Only!
-  # - name: path_value
-  #   type: text
-  #   label: End of URL for Request (must end in .json)
-  #   default: stream/search/tt0012189.json
+    default: "sort=qualitysize|qualityfilter=480p,scr,cam"
 
 search:
   paths:
@@ -41,7 +31,6 @@ search:
       method: get
       response:
         type: json
-        noResultsMessage: ""
 
   rows:
     selector: streams
