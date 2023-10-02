@@ -29,7 +29,7 @@ settings:
   - name: default_opts
     type: text
     label: Torrentio Options
-    default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|sort=quality|limit=10"
+    default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|sort=size|limit=25"
   - name: default_imdb
     type: text
     label: Default IMDB (For Validation Only)
@@ -37,12 +37,12 @@ settings:
 
 search:
   paths:
-    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}/stream/movie/{{ .Config.default_imdb }}.json{{ end }}"
+    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}{{ .Config.default_opts }}/stream/movie/{{ .Config.default_imdb }}.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
-    - path: "{{ if or (.Query.Season .Query.Ep) }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}{{ end }}"
+    - path: "{{ if and .Query.IMDBID .Query.Season .Query.Ep }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}{{ .Config.default_opts }}/stream/series/{{ .Config.default_imdb }}.json{{ end }}"
       method: get
       response:
         type: json
