@@ -7,7 +7,7 @@ type: public
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
-requestDelay: 2
+requestDelay: 15
 links:
     - https://torrentio.strem.fun/
 
@@ -29,7 +29,7 @@ settings:
   - name: default_opts
     type: text
     label: Torrentio Options
-    default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|sort=size|limit=25"
+    default: "sort=qualitysize|qualityfilter=480p,other,scr,cam,unknown|limit=15"
   - name: default_imdb
     type: text
     label: Default IMDB (For Validation Only)
