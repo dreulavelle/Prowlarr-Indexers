@@ -9,7 +9,7 @@ followredirect: false
 testlinktorrent: false
 requestDelay: 2
 links:
-    - https://torrentio.strem.fun/
+  - https://torrentio.strem.fun/
 
 caps:
   categories:
@@ -29,51 +29,47 @@ settings:
   - name: default_opts
     type: text
     label: Torrentio Options
-    default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|qualityfilter=480p,other,scr,cam,unknown|sort=quality|limit=10"
+    default: "sort=qualitysize|qualityfilter=480p,scr,cam"
 
 search:
   paths:
-      # [Movie] If the query is a movie, then use the imdbid, else use the default imdbid.
-    - path: "{{ if eq .Query.Type \"movie\" }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}limit=3/stream/search/tt0137523.json{{ end }}"
+    - path: "{{ if eq .Query.Type \"movie\" }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}stream/movie/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
-      # [TV Show] If the query is a tv show, then use the imdb to include the rest of the series, else use the default imdbid.
-    - path: "{{ if eq .Query.Type \"tvsearch\" }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}.json{{ else }}limit=4/stream/search/tt0137523.json{{ end }}"
+    - path: "{{ if eq .Query.Type \"tvsearch\" }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}stream/search/tt0412142:1:1.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
-      # [TV Show] If the query is an imdbid with season and episode, then use the imdb along with the season and episode number, else use the default imdbid.
-    - path: "{{ if eq .Query.Type \"tvsearch\" }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}limit=5/stream/search/tt0137523.json{{ end }}"
-      method: get
-      response:
-        type: json
-        noResultsMessage: '"streams": []'
-      # [DEBUG]
-    - path: "DEBUG::{{ .Query.Type }}/{{ .Query.Q }}/{{ .Query.Series }}/{{ .Query.Movie }}"
-      method: get
-      response:
-        type: json
 
   rows:
     selector: streams
     missingAttributeEqualsNoResults: true
 
   fields:
-    infohash:
-      selector: infoHash
     title:
       selector: title
       filters:
         - name: split
-          args: ["\n", 0]
+          args: ["\n", "0"]
+    is_season_episode:
+      text: "{{ if .Query.Ep }}:{{ .Query.Season }}:{{ .Query.Ep }}{{ else }}:1{{ end }}{{ if .Query.Ep }}:{{ .Query.Ep }}{{ else }}:1{{ end }}"
+    category_is_tv_show:
+      text: "{{ .Result.title }}"
+      filters:
+        - name: regexp
+          args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    category:
+      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    infohash:
+      selector: infoHash
     size:
       selector: title
       filters:
         - name: regexp
-          args: "(\\d+(\\.?\\d+) GB)"
+          args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
     seeders:
       selector: title
       filters:
