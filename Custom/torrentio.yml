@@ -7,7 +7,7 @@ type: public
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
-requestDelay: 15
+requestDelay: 2
 links:
     - https://torrentio.strem.fun/
 
@@ -25,31 +25,42 @@ caps:
 settings:
   - name: opt_label
     type: info
-    label: You can clear the options if you want no options to be set.
+    label: Torrentio Options are required! This field can not be empty.
   - name: default_opts
     type: text
     label: Torrentio Options
-    default: "sort=qualitysize|qualityfilter=480p,other,scr,cam,unknown|limit=15"
-  - name: default_imdb
-    type: text
-    label: Default IMDB (For Validation Only)
-    default: "tt0137523"
+    default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|qualityfilter=480p,other,scr,cam,unknown|sort=quality|limit=10"
 
 search:
   paths:
-    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}{{ .Config.default_opts }}/stream/movie/{{ .Config.default_imdb }}.json{{ end }}"
+      # [Movie] If the query is a movie, then use the imdbid, else use the default imdbid.
+    - path: "{{ if eq .Query.Type \"movie\" }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}stream/search/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
-    - path: "{{ if and .Query.IMDBID .Query.Season .Query.Ep }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}{{ .Config.default_opts }}/stream/series/{{ .Config.default_imdb }}.json{{ end }}"
+      # [TV Show] If the query is a tv show, then use the imdb to include the rest of the series, else use the default imdbid.
+    - path: "{{ if eq .Query.Type \"tvsearch\" }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}.json{{ else }}stream/search/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
+      # [TV Show] If the query is an imdbid with season and episode, then use the imdb along with the season and episode number, else use the default imdbid.
+    - path: "{{ if eq .Query.Type \"tvsearch\" }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}stream/search/tt0137523.json{{ end }}"
+      method: get
+      response:
+        type: json
+        noResultsMessage: '"streams": []'
+      # [DEBUG]
+    # - path: "DEBUG::{{ .Query.Type }}/{{ .Query.Q }}/{{ .Query.Series }}/{{ .Query.Movie }}"
+    #   method: get
+    #   response:
+    #     type: json
+    #     noResultsMessage: '"streams": []'
 
   rows:
     selector: streams
+    missingAttributeEqualsNoResults: true
 
   fields:
     infohash:
