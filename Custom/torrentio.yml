@@ -34,29 +34,28 @@ settings:
 search:
   paths:
       # [Movie] If the query is a movie, then use the imdbid, else use the default imdbid.
-    - path: "{{ if eq .Query.Type \"movie\" }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}stream/search/tt0137523.json{{ end }}"
+    - path: "{{ if eq .Query.Type \"movie\" }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}limit=3/stream/search/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       # [TV Show] If the query is a tv show, then use the imdb to include the rest of the series, else use the default imdbid.
-    - path: "{{ if eq .Query.Type \"tvsearch\" }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}.json{{ else }}stream/search/tt0137523.json{{ end }}"
+    - path: "{{ if eq .Query.Type \"tvsearch\" }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}.json{{ else }}limit=4/stream/search/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       # [TV Show] If the query is an imdbid with season and episode, then use the imdb along with the season and episode number, else use the default imdbid.
-    - path: "{{ if eq .Query.Type \"tvsearch\" }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}stream/search/tt0137523.json{{ end }}"
+    - path: "{{ if eq .Query.Type \"tvsearch\" }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}limit=5/stream/search/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       # [DEBUG]
-    # - path: "DEBUG::{{ .Query.Type }}/{{ .Query.Q }}/{{ .Query.Series }}/{{ .Query.Movie }}"
-    #   method: get
-    #   response:
-    #     type: json
-    #     noResultsMessage: '"streams": []'
+    - path: "DEBUG::{{ .Query.Type }}/{{ .Query.Q }}/{{ .Query.Series }}/{{ .Query.Movie }}"
+      method: get
+      response:
+        type: json
 
   rows:
     selector: streams
