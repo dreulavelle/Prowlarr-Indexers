@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
+    ports:
+      - 9696:9696
+#    environment:
+#      - PUID=1000
+#      - PGID=1000
+#      - TZ=
+    volumes:
+      - ./config:/config
+      - ./Custom:/config/Definitions/Custom
+    restart: unless-stopped
