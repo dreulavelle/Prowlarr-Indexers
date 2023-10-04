@@ -22,6 +22,10 @@ This README will guide you through the process of adding Torrentio as a custom i
    docker compose up -d
    ```
 
+*. **More Info**
+
+   visit https://docs.linuxserver.io/images/docker-prowlarr for more info on the configuration of the base prowlarr container
+
 ## Direct OS Install
 
 ## Prerequisites
