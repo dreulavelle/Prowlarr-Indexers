@@ -2,6 +2,28 @@
 
 This README will guide you through the process of adding Torrentio as a custom indexer to your Prowlarr installation using the `torrentio.yml` configuration file.
 
+## Docker Install
+
+1. **Checkout this repo via git clone**
+
+   ```
+   git clone https://github.com/dreulavelle/Prowlarr-Indexers.git 
+   ```
+
+2. **change directory to the newly git cloned directory**
+
+   ```
+   cd Prowlarr-Indexers
+   ```
+
+3. **Start Docker**
+
+   ```
+   docker compose up -d
+   ```
+
+## Direct OS Install
+
 ## Prerequisites
 
 - Prowlarr must be installed and running on your system.
