@@ -1,7 +1,7 @@
 ---
 id: torrentio
 name: Torrentio
-description: "Torrentio Indexer for Real-Debrid Cached Hashes"
+description: "Torrentio Indexer for Real-Debrid (Cached Indexer)"
 language: en-US
 type: public
 encoding: UTF-8
@@ -18,8 +18,8 @@ caps:
 
   modes:
     search: [q]
-    tv-search: [q, season, ep, imdbid]
     movie-search: [q, imdbid]
+    tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
 
 settings:
@@ -32,27 +32,22 @@ settings:
     default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|sort=qualitysize|qualityfilter=480p,other,scr,cam,unknown|limit=10"
 
 search:
+  headers:
+      User-Agent: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36"]
+
   paths:
-    - path: "{{ if eq .Query.Type 'movie' }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1/stream/movie/tt0012189.json{{ end }}"
+    - path: "{{ if eq .Query.Type \"movie\" }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1/stream/movie/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
-        noResultsMessage: '"streams": []'
+        noResultsMessage: '"catalog": []'
       categories: [Movies]
-    - path: "{{ if eq .Query.Type 'tvsearch' }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}{{ if .Query.IMDBID }}stream/search/{{ .Query.IMDBID }}:1:1.json{{ end }}"
+    - path: "{{ if and .Query.Season .Query.Ep }}{{ .Config.default_opts }}/stream/series/tt{{ .Query.IMDBIDShort }}:0{{ .Query.Season }}:0{{ .Query.Ep }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1/stream/movie/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
-        noResultsMessage: '"streams": []'
+        noResultsMessage: '"catalog": []'
       categories: [TV]
-    # - path: "{{ if eq .Query.Type \"tvsearch\" and .Query.Season and .Query.Ep }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}{{ .Config.default_opts }}/stream/series/{{ .Query.IMDBID }}:1:1.json{{ end }}"
-    #   method: get
-    #   response:
-    #     type: json
-    #     noResultsMessage: '"streams": []'
-    #   categories: [TV]
-
-
 
   rows:
     selector: streams
