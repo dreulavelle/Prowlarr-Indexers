@@ -1,13 +1,13 @@
 ---
 id: torrentio
 name: Torrentio
-description: "Torrentio Indexer for Real-Debrid (Cached Indexer)"
+description: "Torrentio Indexer"
 language: en-US
 type: public
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
-requestDelay: 30
+requestDelay: 2
 links:
   - https://torrentio.strem.fun/
 
@@ -15,12 +15,13 @@ caps:
   categories:
     Movies: Movies
     TV: TV
-
+  
   modes:
     search: [q]
     movie-search: [q, imdbid]
     tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
+
 
 settings:
   - name: opt_label
@@ -33,10 +34,9 @@ settings:
 
 search:
   headers:
-      User-Agent: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36"]
-
+    User-Agent: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"]
   paths:
-    - path: "{{ if eq .Query.Type \"movie\" }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1/stream/movie/tt0137523.json{{ end }}"
+    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}sort=size|limit=1/stream/movie/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
@@ -48,7 +48,6 @@ search:
         type: json
         noResultsMessage: '"catalog": []'
       categories: [TV]
-
   rows:
     selector: streams
     missingAttributeEqualsNoResults: true
@@ -78,4 +77,3 @@ search:
       filters:
         - name: regexp
           args: "(\\uD83D\\uDC64 \\d+)"
-# engine n/a
