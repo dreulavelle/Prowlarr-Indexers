@@ -7,7 +7,7 @@ type: public
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
-requestDelay: 2
+requestDelay: 30
 links:
   - https://torrentio.strem.fun/
 
@@ -42,7 +42,7 @@ search:
         type: json
         noResultsMessage: '"catalog": []'
       categories: [Movies]
-    - path: "{{ if and .Query.Season .Query.Ep }}{{ .Config.default_opts }}/stream/series/tt{{ .Query.IMDBIDShort }}:0{{ .Query.Season }}:0{{ .Query.Ep }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1/stream/movie/tt0137523.json{{ end }}"
+    - path: "{{ if and .Query.Season .Query.Ep }}{{ .Config.default_opts }}/stream/series/tt{{ .Query.IMDBIDShort }}:0{{ .Query.Season }}:0{{ .Query.Ep }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1/stream/series/tt1632701:1:1.json{{ end }}"
       method: get
       response:
         type: json
