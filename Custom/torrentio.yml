@@ -22,27 +22,33 @@ caps:
     tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
 
-
 settings:
   - name: opt_label
     type: info
-    label: Torrentio Options are required! This field can not be empty.
+    label: Torrentio Options are Required
   - name: default_opts
     type: text
     label: Torrentio Options
     default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|sort=qualitysize|qualityfilter=480p,scr,cam"
+  - name: rdkey_label
+    type: info
+    label: Real-Debrid API Key Required
+  - name: rd_key
+    type: text
+    label: Real-Debrid API Key
+    default: ""
 
 search:
   headers:
     User-Agent: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"]
   paths:
-    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|debridoptions=nodownloadlinks/stream/movie/{{ .Query.IMDBID }}.json{{ else }}sort=size|limit=1/stream/movie/tt0137523.json{{ end }}"
+    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"catalog": []'
       categories: [Movies]
-    - path: "{{ if and .Query.Season .Query.Ep }}{{ .Config.default_opts }}|debridoptions=nodownloadlinks/stream/series/tt{{ .Query.IMDBIDShort }}:0{{ .Query.Season }}:0{{ .Query.Ep }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1/stream/series/tt1632701:1:1.json{{ end }}"
+    - path: "{{ if and .Query.Season .Query.Ep }}{{ .Config.default_opts }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/series/tt{{ .Query.IMDBIDShort }}:0{{ .Query.Season }}:0{{ .Query.Ep }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/series/tt1632701:1:1.json{{ end }}"
       method: get
       response:
         type: json
@@ -57,7 +63,12 @@ search:
       selector: title
       filters:
         - name: split
-          args: ["\n", "0"]
+          args: ["\n", 0]
+    year:
+      selector: title
+      filters:
+        - name: regexp
+          args: "(\\b(19|20)\\d\\d\\b)"
     category_is_tv_show:
       text: "{{ .Result.title }}"
       filters:
@@ -66,7 +77,10 @@ search:
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
     infohash:
-      selector: infoHash
+      selector: url
+      filters:
+        - name: split
+          args: ["/", 5]
     size:
       selector: title
       filters:
