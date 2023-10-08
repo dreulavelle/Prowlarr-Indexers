@@ -54,6 +54,7 @@ search:
         type: json
         noResultsMessage: '"streams": []'
       categories: [TV]
+
   rows:
     selector: streams
     missingAttributeEqualsNoResults: true
