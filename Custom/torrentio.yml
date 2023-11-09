@@ -15,7 +15,7 @@ caps:
   categories:
     Movies: Movies
     TV: TV
-  
+
   modes:
     search: [q]
     movie-search: [q, imdbid]
@@ -42,13 +42,13 @@ search:
   headers:
     User-Agent: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"]
   paths:
-    - path: "{{ .Config.default_opts }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}tt0137523{{ end }}.json"
+    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       categories: [Movies]
-    - path: "{{ .Config.default_opts }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}tt1632701{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json"
+    - path: "{{ if .Query.IMDBIDShort }}{{ .Config.default_opts }}{{else}}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1{{ end }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/series/tt{{ if .Query.IMDBIDShort }}{{ .Query.IMDBIDShort }}{{ else }}1632701{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json"
       method: get
       response:
         type: json
