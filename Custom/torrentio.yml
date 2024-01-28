@@ -7,7 +7,7 @@ type: public
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
-requestDelay: 2
+requestDelay: 20
 links:
   - https://torrentio.strem.fun/
 
@@ -29,7 +29,7 @@ settings:
   - name: default_opts
     type: text
     label: Torrentio Options
-    default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|sort=qualitysize|qualityfilter=480p,scr,cam"
+    default: "sort=qualitysize|qualityfilter=480p,scr,cam"
   - name: rdkey_label
     type: info
     label: Real-Debrid API Key Required
