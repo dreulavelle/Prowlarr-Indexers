@@ -1,15 +1,15 @@
 ---
-id: torrentio-public
-name: Public (rate-limited) Torrentio
-description: "Torrentio Indexer (Public, rate-limited)"
+id: torrentio-elfhosted
+name: ElfHosted Internal Torrentio
+description: "ElfHosted Torrentio Indexer (internal, no rate-limit)"
 language: en-US
 type: public
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
-requestDelay: 20
+requestDelay: 2
 links:
-  - https://torrentio.strem.fun/
+  - http://elfhosted.torrentio
 caps:
   categories:
     Movies: Movies
@@ -28,7 +28,7 @@ settings:
   - name: default_opts
     type: text
     label: Torrentio Options
-    default: "sort=qualitysize|qualityfilter=480p,scr,cam"
+    default: "providers=yts,eztv,rarbg,1337x|sort=qualitysize|qualityfilter=480p,scr,cam"
   - name: rdkey_label
     type: info
     label: Real-Debrid API Key Required
@@ -90,4 +90,4 @@ search:
       selector: title
       filters:
         - name: regexp
-          args: "(\\uD83D\\uDC64 \\d+)"
+          args: "(\\uD83D\\uDC64 \\d+)" 
