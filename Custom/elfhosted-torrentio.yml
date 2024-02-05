@@ -36,6 +36,28 @@ settings:
     type: text
     label: Real-Debrid API Key
     default: ""
+  - name: validate_imdb_movie_label
+    type: info
+    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
+  - name: validate_imdb_movie_id
+    type: integer
+    label: (Optional) IMDB ID of Movie to use for Radarr validation (must exist in indexer)
+    default: "0137523"  # Fight Club
+  - name: validate_imdb_tv_label
+    type: info
+    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
+  - name: validate_imdb_tv_id
+    type: integer
+    label: (Optional) IMDB ID TV show to use for Sonarr validation (must exist in indexer)
+    default: "9288030"  # Reacher
+  - name: validate_imdb_tv_season
+    type: integer
+    label: (Optional) Season number to use for Sonarr validation (must exist in indexer)
+    default: "1"
+  - name: validate_imdb_tv_episode
+    type: integer
+    label: (Optional) Episode number to use for Sonarr validation (must exist in indexer)
+    default: "1"    
 
 search:
   headers:
@@ -47,7 +69,7 @@ search:
         type: json
         noResultsMessage: '"streams": []'
       categories: [Movies]
-    - path: "{{ if .Query.IMDBIDShort }}{{ .Config.default_opts }}{{else}}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1{{ end }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/series/tt{{ if .Query.IMDBIDShort }}{{ .Query.IMDBIDShort }}{{ else }}1632701{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json"
+    - path: "{{ if .Query.IMDBIDShort }}{{ .Config.default_opts }}{{else}}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1{{ end }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/series/tt{{ if .Query.IMDBIDShort }}{{ .Query.IMDBIDShort }}{{ else }}{{ .Config.validate_imdb_tv_id }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}{{ .Config.validate_imdb_tv_season }}{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}{{ .Config.validate_imdb_tv_episode }}{{ end }}.json"
       method: get
       response:
         type: json
