@@ -41,7 +41,7 @@ settings:
     type: info
     label: The following help to validate an indexer in Sonarr by confirming that the show returns results
   - name: validate_imdb_movie_id
-    type: integer
+    type: text
     label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
     default: "tt0137523"  # Fight Club
   - name: validate_imdb_tv_label
