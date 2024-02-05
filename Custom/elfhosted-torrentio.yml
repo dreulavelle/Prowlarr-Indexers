@@ -1,7 +1,7 @@
 ---
 id: torrentio-elfhosted
-name: ElfHosted Torrentio
-description: "ElfHosted Torrentio Indexer"
+name: ElfHosted Public Torrentio Indexer
+description: "ElfHosted Public Torrentio Indexer (rate-limited)"
 language: en-US
 type: public
 encoding: UTF-8
@@ -42,7 +42,7 @@ settings:
   - name: validate_imdb_movie_id
     type: text
     label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
-    default: "tt0137523"  # Fight Club
+    default: "0137523"  # Fight Club
   - name: validate_imdb_tv_label
     type: info
     label: The following help to validate an indexer in Sonarr by confirming that the show returns results
