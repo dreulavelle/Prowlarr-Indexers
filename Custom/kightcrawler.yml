@@ -1,7 +1,7 @@
 ---
-id: torrentio-elfhosted-internal
-name: ElfHosted Internal Torrentio Indexer
-description: "ElfHosted Internal Torrentio Indexer (not rate-limited)"
+id: knightcrawler
+name: Knightcrawler Indexer
+description: "Self-hosted Knightcrawler Indexer"
 language: en-US
 type: public
 encoding: UTF-8
@@ -9,7 +9,7 @@ followredirect: false
 testlinktorrent: false
 requestDelay: 2
 links:
-  - http://elfhosted.torrentio
+  - https://torrentio.elfhosted.com # replace with your URL here
 caps:
   categories:
     Movies: Movies
