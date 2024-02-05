@@ -1,7 +1,7 @@
 ---
 id: torrentio-internal
-name: ElfHosted Paid Internal Torrentio/Knightcrawler Indexer
-description: "ElfHosted Paid Internal Torrentio/Knightcrawler Indexer (un-rate-limited)"
+name: ElfHosted Customer Internal Torrentio/Knightcrawler Indexer
+description: "ElfHosted Customer Internal Torrentio/Knightcrawler Indexer (un-rate-limited)"
 language: en-US
 type: public
 encoding: UTF-8
@@ -31,7 +31,7 @@ settings:
     default: "providers=yts,eztv,rarbg,1337x|sort=qualitysize|qualityfilter=480p,scr,cam"
   - name: rdkey_label
     type: info
-    label: Real-Debrid API Key Required
+    label: Debrid settings required
   - name: debrid_provider_key
     type: text
     label: Debrid provider API Key
@@ -47,6 +47,9 @@ settings:
       debridlink: Debridlink
       offcloud: Offcloud
       putio: Put.io    
+  - name: validation_label
+    type: info
+    label: Validation settings optional   
   - name: validate_imdb_movie_label
     type: info
     label: The following help to validate an indexer in Sonarr by confirming that the show returns results
