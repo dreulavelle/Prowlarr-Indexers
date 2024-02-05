@@ -9,7 +9,7 @@ followredirect: false
 testlinktorrent: false
 requestDelay: 2
 links:
-  - http://elfhosted.torrentio
+  - https://torrentio.elfhosted.com
 caps:
   categories:
     Movies: Movies
