@@ -1,0 +1,115 @@
+---
+id: knightcrawler
+name: Knightcrawler (self-hosted instance)
+description: "Knightcrawler Indexer"
+language: en-US
+type: public
+encoding: UTF-8
+followredirect: false
+testlinktorrent: false
+requestDelay: 2
+links:
+  - http://torrentio.elfhosted.com # change this to your Knightcrawler URL
+caps:
+  categories:
+    Movies: Movies
+    TV: TV
+
+  modes:
+    search: [q]
+    movie-search: [q, imdbid]
+    tv-search: [q, imdbid, season, ep]
+  allowrawsearch: false
+
+settings:
+  - name: opt_label
+    type: info
+    label: Torrentio Options are Required
+  - name: default_opts
+    type: text
+    label: Torrentio Options
+    default: "providers=yts,eztv,rarbg,1337x|sort=qualitysize|qualityfilter=480p,scr,cam"
+  - name: rdkey_label
+    type: info
+    label: Real-Debrid API Key Required
+  - name: rd_key
+    type: text
+    label: Real-Debrid API Key
+    default: ""
+  - name: validate_imdb_movie_label
+    type: info
+    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
+  - name: validate_imdb_movie_id
+    type: text
+    label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
+    default: "tt0137523"  # Fight Club
+  - name: validate_imdb_tv_label
+    type: info
+    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
+  - name: validate_imdb_tv_id
+    type: text
+    label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
+    default: "9288030"  # Reacher
+  - name: validate_imdb_tv_season
+    type: text
+    label: Season number to use for Sonarr validation
+    default: "1"
+  - name: validate_imdb_tv_episode
+    type: text
+    label: Episode number to use for Sonarr validation
+    default: "1"    
+
+search:
+  headers:
+    User-Agent: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"]
+  paths:
+    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/tt0137523.json{{ end }}"
+      method: get
+      response:
+        type: json
+        noResultsMessage: '"streams": []'
+      categories: [Movies]
+    - path: "{{ if .Query.IMDBIDShort }}{{ .Config.default_opts }}{{else}}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1{{ end }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/series/tt{{ if .Query.IMDBIDShort }}{{ .Query.IMDBIDShort }}{{ else }}tt{{ .Config.validate_imdb_tv_id }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}{{ .Config.validate_imdb_tv_season }}{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}{{ .Config.validate_imdb_tv_episode }}{{ end }}.json"
+      method: get
+      response:
+        type: json
+        noResultsMessage: '"streams": []'
+      categories: [TV]
+
+  rows:
+    selector: streams
+    missingAttributeEqualsNoResults: true
+
+  fields:
+    title:
+      selector: title
+      filters:
+        - name: split
+          args: ["\n", 0]
+    year:
+      selector: title
+      filters:
+        - name: regexp
+          args: "(\\b(19|20)\\d\\d\\b)"
+    category_is_tv_show:
+      text: "{{ .Result.title }}"
+      filters:
+        - name: regexp
+          args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    category:
+      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    infohash:
+      selector: url
+      filters:
+        - name: split
+          args: ["/", 5]
+    size:
+      selector: title
+      filters:
+        - name: regexp
+          args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
+    seeders:
+      selector: title
+      filters:
+        - name: regexp
+          args: "(\\uD83D\\uDC64 \\d+)" 
