@@ -21,6 +21,7 @@ caps:
     tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
 
+
 settings:
   - name: opt_label
     type: info
@@ -28,7 +29,7 @@ settings:
   - name: default_opts
     type: text
     label: Torrentio Options
-    default: "sort=qualitysize|qualityfilter=480p,scr,cam"
+    default: "providers=yts,eztv,rarbg,1337x|sort=qualitysize|qualityfilter=480p,scr,cam"
   - name: rdkey_label
     type: info
     label: Real-Debrid API Key Required
@@ -36,23 +37,38 @@ settings:
     type: text
     label: Real-Debrid API Key
     default: ""
+  - name: validate_imdb_movie_label
+    type: info
+    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
+  - name: validate_imdb_movie
+    type: text
+    label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
+    default: "tt0137523"  # Fight Club
+  - name: validate_imdb_tv_label
+    type: info
+    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
+  - name: validate_imdb_tv
+    type: text
+    label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
+    default: "tt9288030:2:1"  # Reacher S02E01
 
 search:
   headers:
     User-Agent: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"]
   paths:
-    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/tt0137523.json{{ end }}"
+    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/movie/{{ .Config.validate_imdb_movie }}.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       categories: [Movies]
-    - path: "{{ if .Query.IMDBIDShort }}{{ .Config.default_opts }}{{else}}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1{{ end }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/series/tt{{ if .Query.IMDBIDShort }}{{ .Query.IMDBIDShort }}{{ else }}1632701{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json"
+    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/series/{{ .Query.IMDBID }}:{{ .Query.Season }}:{{ .Query.Ep }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|realdebrid={{ .Config.rd_key }}|debridoptions=nodownloadlinks/stream/series/{{ .Config.validate_imdb_tv }}.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       categories: [TV]
+
 
   rows:
     selector: streams
@@ -86,8 +102,3 @@ search:
       filters:
         - name: regexp
           args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
-    seeders:
-      selector: title
-      filters:
-        - name: regexp
-          args: "(\\uD83D\\uDC64 \\d+)"

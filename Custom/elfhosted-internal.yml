@@ -1,7 +1,7 @@
 ---
-id: torrentio-elfhosted
-name: ElfHosted Public Torrentio Indexer
-description: "ElfHosted Public Torrentio Indexer (rate-limited)"
+id: torrentio-internal
+name: ElfHosted Paid Internal Torrentio/Knightcrawler Indexer
+description: "ElfHosted Paid Internal Torrentio/Knightcrawler Indexer (un-rate-limited)"
 language: en-US
 type: public
 encoding: UTF-8
