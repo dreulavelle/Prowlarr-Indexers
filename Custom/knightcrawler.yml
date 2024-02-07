@@ -1,15 +1,15 @@
 ---
-id: torrentio-public
-name: Public (rate-limited) Torrentio
-description: "Torrentio Indexer (Public, rate-limited)"
+id: knightcrawler
+name: Knightcrawler Indexer
+description: "Self-hosted Knightcrawler Indexer"
 language: en-US
 type: public
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
-requestDelay: 20
+requestDelay: 2
 links:
-  - https://torrentio.strem.fun/
+  - https://torrentio.elfhosted.com # replace with your URL here
 caps:
   categories:
     Movies: Movies
@@ -20,7 +20,6 @@ caps:
     movie-search: [q, imdbid]
     tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
-
 
 settings:
   - name: opt_label
