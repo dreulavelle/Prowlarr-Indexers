@@ -9,7 +9,7 @@ testlinktorrent: false
 requestDelay: 15
 links:
   - https://annatar.elfhosted.com
-  #- http://annatar:8000 # Uncomment this line if you are running annatar internally
+  - http://annatar:8000
 caps:
   categories:
     Movies: Movies
