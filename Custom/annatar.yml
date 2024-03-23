@@ -38,7 +38,7 @@ settings:
     label: Validation settings optional
   - name: validate_imdb_movie_label
     type: info
-    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
+    label: The following help to validate an indexer in Radarr by confirming that the Movie returns results
   - name: validate_imdb_movie
     type: text
     label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
