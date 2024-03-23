@@ -28,7 +28,7 @@ settings:
   - name: debrid_provider_key
     type: text
     label: Debrid provider API Key
-    default: "your_debrid_api_key" #Replace with your original Debrdi Provider Key
+    default: "YOUR_DEBRID_API_KEY" # Replace with your original Debrid Provider Key
   - name: debrid_provider
     type: text
     label: Debrid provider
@@ -52,15 +52,14 @@ settings:
     default: "tt9288030" # Reacher S02E01
   - name: limit
     type: text
-    label: Maximum Resuts Allowed 15
-    default: 10 # Default limit
+    label: Maximum Results Allowed 15
+    default: 15 # Default limit
 
 search:
   headers:
     User-Agent:
-      [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0",
-      ]
+      - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"
+
   paths:
     - path: /search/cached/{{ .Config.debrid_provider }}/movie/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_movie }}{{ end }}?debrid_api_key={{ .Config.debrid_provider_key }}&limit={{ .Config.limit }}
       method: get
@@ -68,6 +67,7 @@ search:
         type: json
         noResultsMessage: '"streams": []'
       categories: [Movies]
+
     - path: /search/cached/{{ .Config.debrid_provider }}/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}?debrid_api_key={{ .Config.debrid_provider_key }}&season={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}&episode={{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}&limit={{ .Config.limit }}
       method: get
       response:
@@ -102,6 +102,8 @@ search:
       filters:
         - name: split
           args: ["/", 5]
+    details:
+      selector: url
     size:
       selector: title
       filters:
