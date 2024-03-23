@@ -22,9 +22,6 @@ caps:
   allowrawsearch: false
 
 settings:
-  - name: rdkey_label
-    type: info
-    label: Debrid settings required
   - name: debrid_provider_key
     type: text
     label: Debrid provider API Key
@@ -33,26 +30,17 @@ settings:
     type: text
     label: Debrid provider
     default: real_debrid
-  - name: validation_label
-    type: info
-    label: Validation settings optional
-  - name: validate_imdb_movie_label
-    type: info
-    label: The following help to validate an indexer in Radarr by confirming that the movie returns results
   - name: validate_imdb_movie
     type: text
     label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
     default: "tt0137523" # Fight Club
-  - name: validate_imdb_tv_label
-    type: info
-    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
   - name: validate_imdb_tv
     type: text
     label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
     default: "tt9288030" # Reacher S02E01
   - name: limit
     type: text
-    label: Maximum Results Allowed 15
+    label: Maximum Resuts Allowed 15
     default: 15 # Default limit
 
 search:
@@ -85,6 +73,8 @@ search:
       filters:
         - name: split
           args: ["\n", 0]
+    details:
+      selector: url
     year:
       selector: title
       filters:
@@ -102,8 +92,6 @@ search:
       filters:
         - name: split
           args: ["/", 5]
-    details:
-      selector: url
     size:
       selector: title
       filters:
