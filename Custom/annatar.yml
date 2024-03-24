@@ -14,13 +14,11 @@ caps:
   categories:
     Movies: Movies
     TV: TV
-
   modes:
     search: [q]
     movie-search: [q, imdbid]
     tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
-
 settings:
   - name: debrid_provider_key
     type: text
@@ -42,13 +40,18 @@ settings:
     type: text
     label: Maximum Resuts Allowed 15
     default: 15 # Default limit
-
+  - name: default_season
+    type: text
+    label: Default Season
+    default: 1
+  - name: default_episode
+    type: text
+    label: Default Episode
+    default: 1
 search:
   headers:
     User-Agent:
-      [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0",
-      ]
+      - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"
   paths:
     - path: "/search/cached/{{ .Config.debrid_provider }}/movie/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_movie }}{{ end }}?debrid_api_key={{ .Config.debrid_provider_key }}&limit={{ .Config.limit }}"
       method: get
@@ -56,17 +59,15 @@ search:
         type: json
         noResultsMessage: '"streams": []'
       categories: [Movies]
-    - path: "/search/cached/{{ .Config.debrid_provider }}/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}?debrid_api_key={{ .Config.debrid_provider_key }}&season={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}&episode={{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}&limit={{ .Config.limit }}"
+    - path: "/search/cached/{{ .Config.debrid_provider }}/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}?debrid_api_key={{ .Config.debrid_provider_key }}&season={{ if .Query.Season }}{{ .Query.Season }}{{ else }}{{ .Config.default_season }}{{ end }}&episode={{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}{{ .Config.default_episode }}{{ end }}&limit={{ .Config.limit }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       categories: [TV]
-
   rows:
     selector: streams
     missingAttributeEqualsNoResults: true
-
   fields:
     title:
       selector: title
