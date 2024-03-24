@@ -6,7 +6,7 @@ type: public
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
-requestDelay: 15
+requestDelay: 2
 links:
   - https://annatar.elfhosted.com
   - http://annatar:8000
@@ -16,8 +16,8 @@ caps:
     TV: TV
   modes:
     search: [q]
-    movie-search: [q, imdbid]
-    tv-search: [q, imdbid, season, ep]
+    movie-search: [imdbid]
+    tv-search: [imdbid]
   allowrawsearch: false
 settings:
   - name: debrid_provider_key
@@ -38,8 +38,8 @@ settings:
     default: "tt9288030" # Reacher S02E01
   - name: limit
     type: text
-    label: Maximum Resuts Allowed 15
-    default: 15 # Default limit
+    label: Maximum Resuts Allowed Per Resolution 15
+    default: 10 # Default limit
   - name: default_season
     type: text
     label: Default Season
@@ -49,22 +49,21 @@ settings:
     label: Default Episode
     default: 1
 search:
-  headers:
-    User-Agent:
-      - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"
   paths:
-    - path: "/search/cached/{{ .Config.debrid_provider }}/movie/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_movie }}{{ end }}?debrid_api_key={{ .Config.debrid_provider_key }}&limit={{ .Config.limit }}"
+    - path: "{{ if .Query.IMDBID }}/search/cached/{{ .Config.debrid_provider }}/movie/{{ .Query.IMDBID }}?debrid_api_key={{ .Config.debrid_provider_key }}&limit={{ .Config.limit }}{{ else }}/search/cached/{{ .Config.debrid_provider }}/movie/{{ .Config.validate_imdb_movie }}?debrid_api_key={{ .Config.debrid_provider_key }}&limit={{ .Config.limit }}{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       categories: [Movies]
-    - path: "/search/cached/{{ .Config.debrid_provider }}/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}?debrid_api_key={{ .Config.debrid_provider_key }}&season={{ if .Query.Season }}{{ .Query.Season }}{{ else }}{{ .Config.default_season }}{{ end }}&episode={{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}{{ .Config.default_episode }}{{ end }}&limit={{ .Config.limit }}"
+
+    - path: "{{ if .Query.IMDBID }}/search/cached/{{ .Config.debrid_provider }}/series/{{ .Query.IMDBID }}?season={{ .Query.Season }}&episode={{ .Query.Ep }}&limit={{ .Config.limit }}&debrid_api_key={{ .Config.debrid_provider_key }}{{ else }}/search/cached/{{ .Config.debrid_provider }}/series/{{ .Config.validate_imdb_tv }}?season={{ .Config.default_season }}&episode={{ .Config.default_episode }}&limit={{ .Config.limit }}&debrid_api_key={{ .Config.debrid_provider_key }}{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       categories: [TV]
+
   rows:
     selector: streams
     missingAttributeEqualsNoResults: true
