@@ -16,8 +16,8 @@ caps:
     TV: TV
   modes:
     search: [q]
-    movie-search: [imdbid]
-    tv-search: [imdbid]
+    movie-search: [q, imdbid]
+    tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
 settings:
   - name: debrid_provider_key
