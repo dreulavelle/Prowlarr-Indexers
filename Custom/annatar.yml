@@ -57,7 +57,7 @@ search:
         noResultsMessage: '"streams": []'
       categories: [Movies]
 
-    - path: "{{ if .Query.IMDBID }}/search/cached/{{ .Config.debrid_provider }}/series/{{ .Query.IMDBID }}?season={{ .Query.Season }}&episode={{ .Query.Ep }}&limit={{ .Config.limit }}&debrid_api_key={{ .Config.debrid_provider_key }}{{ else }}/search/cached/{{ .Config.debrid_provider }}/series/{{ .Config.validate_imdb_tv }}?season={{ .Config.default_season }}&episode={{ .Config.default_episode }}&limit={{ .Config.limit }}&debrid_api_key={{ .Config.debrid_provider_key }}{{ end }}"
+    - path: "{{ if and .Query.IMDBID .Query.Ep }}/search/cached/{{ .Config.debrid_provider }}/series/{{ .Query.IMDBID }}?season={{ .Query.Season }}&episode={{ .Query.Ep }}&limit={{ .Config.limit }}&debrid_api_key={{ .Config.debrid_provider_key }}{{ else }}/search/cached/{{ .Config.debrid_provider }}/series/{{ .Config.validate_imdb_tv }}?season={{ .Config.default_season }}&episode={{ .Config.default_episode }}&limit={{ .Config.limit }}&debrid_api_key={{ .Config.debrid_provider_key }}{{ end }}"
       method: get
       response:
         type: json
