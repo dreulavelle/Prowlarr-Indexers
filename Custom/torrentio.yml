@@ -70,13 +70,13 @@ search:
   headers:
     User-Agent: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"]
   paths:
-    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}/stream/movie/{{ .Config.validate_imdb_movie }}.json{{ end }}"
+    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}|debridoptions=nodownloadlinks/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}|debridoptions=nodownloadlinks/stream/movie/{{ .Config.validate_imdb_movie }}.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       categories: [Movies]
-    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}{{else}}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1{{ end }}|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}/stream/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID}}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json"
+    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}{{else}}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1{{ end }}|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}|debridoptions=nodownloadlinks/stream/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID}}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json"
       method: get
       response:
         type: json
