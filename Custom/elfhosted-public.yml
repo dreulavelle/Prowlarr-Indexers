@@ -92,7 +92,7 @@ search:
       selector: title
       filters:
         - name: split
-          args: ["\n", 1]
+          args: ["\n", 0]
     year:
       selector: title
       filters:
