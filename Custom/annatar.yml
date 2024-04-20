@@ -10,6 +10,7 @@ requestDelay: 2
 links:
   - https://annatar.elfhosted.com
   - http://annatar:8000
+  - http://elfhosted-internal.annatar
 caps:
   categories:
     Movies: Movies
