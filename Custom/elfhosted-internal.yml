@@ -92,7 +92,7 @@ search:
       selector: title
       filters:
         - name: split
-          args: ["\n", 1]
+          args: ["\n", {{ if .Result.category_is_tv_show }}0{{ else }}1{{ end }}]
     year:
       selector: title
       filters:
