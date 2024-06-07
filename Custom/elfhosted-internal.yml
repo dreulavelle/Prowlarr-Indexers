@@ -88,23 +88,30 @@ search:
     missingAttributeEqualsNoResults: true
 
   fields:
-    title:
-      selector: title
-      filters:
-        - name: split
-          args: ["\n", 1]
-    year:
-      selector: title
-      filters:
-        - name: regexp
-          args: "(\\b(19|20)\\d\\d\\b)"
     category_is_tv_show:
       text: "{{ .Result.title }}"
       filters:
         - name: regexp
           args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    title0:
+      selector: title
+      filters:
+        - name: split
+          args: ["\n", 0]
+    title1:
+      selector: title
+      filters:
+        - name: split
+          args: ["\n", 1]
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    title:
+      text: "{{ if .Result.category_is_tv_show }}{{ .Result.title0 }}{{ else }}{{ .Result.title1 }}{{ end }}"
+    year:
+      selector: title
+      filters:
+        - name: regexp
+          args: "(\\b(19|20)\\d\\d\\b)"
     infohash:
       selector: url
       filters:
