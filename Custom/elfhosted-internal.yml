@@ -88,11 +88,6 @@ search:
     missingAttributeEqualsNoResults: true
 
   fields:
-    category_is_tv_show:
-      text: "{{ .Result.title }}"
-      filters:
-        - name: regexp
-          args: "\\b(S\\d+(?:E\\d+)?)\\b"
     title0:
       selector: title
       filters:
@@ -103,6 +98,11 @@ search:
       filters:
         - name: split
           args: ["\n", 1]
+    category_is_tv_show:
+      text: "{{ .Result.title1 }}"
+      filters:
+        - name: regexp
+          args: "\\b(S\\d+(?:E\\d+)?)\\b"          
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
     title:
