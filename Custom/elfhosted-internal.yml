@@ -1,6 +1,6 @@
 ---
 id: torrentio-internal
-name: ElfHosted Customer Internal Torrentio/Knightcrawler Indexer
+name: ElfCrawler
 description: "ElfHosted Customer Internal Torrentio/Knightcrawler Indexer (un-rate-limited)"
 language: en-US
 type: public
