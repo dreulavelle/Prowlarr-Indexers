@@ -1,0 +1,92 @@
+id: zilean
+name: Zilean
+description: "A custom indexer for Zilean the unofficial DMM indexer"
+language: en-US
+type: public
+encoding: UTF-8
+followredirect: false
+testlinktorrent: false
+requestDelay: 2
+links:
+  - http://zilean:8181
+
+caps:
+  categories:
+    Movies: Movies
+    TV: TV
+  modes:
+    search: [q]
+    movie-search: [q, year]
+    tv-search: [q, year, season, ep]
+  allowrawsearch: false
+settings:
+  - name: default_movie_query
+    type: text
+    default: "Guardians of the Galaxy"
+  - name: default_tv_query
+    type: text
+    default: "House of the Dragon"
+
+search:
+  paths:
+    - path: /dmm/filtered?Query={{ if .Keywords }}{{ .Keywords }}{{ else }}{{ .Config.default_movie_query }}{{ end }}{{ if .Query.Year }}&Year={{ .Query.Year }}{{ else }}{{ end }}
+      method: get
+      response:
+        type: json
+      categories: [Movies]
+
+    - path: /dmm/filtered?Query={{ if .Keywords }}{{ .Keywords }}{{ else }}{{ .Config.default_tv_query }}{{ end }}&Season={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}{{ if .Query.Ep }}&Episode={{ .Query.Ep }}{{ else }}{{ end }}
+
+      method: get
+      response:
+        type: json
+      categories: [TV]
+    
+  keywordsfilters:
+    - name: re_replace
+      args: ["\\bS\\d+(?:E\\d+)?\\b", ""]  # Remove season and episode info
+    - name: re_replace
+      args: ["\\b(19|20)\\d{2}\\b", ""]  # Remove year info
+    - name: re_replace
+      args: ["[\\[\\]()]", ""]  # Remove brackets
+
+  rows:
+    selector: $
+    missingAttributeEqualsNoResults: true
+
+  fields:
+    title:
+      selector: rawTitle
+    year:
+      selector: rawTitle
+      filters:
+        - name: regexp
+          args: "(\\b(19|20)\\d{2}\\b)"
+    category_is_tv_show:
+      selector: rawTitle
+      filters:
+        - name: regexp
+          args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    category:
+      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    infohash:
+      selector: infoHash
+    size:
+      selector: size
+    quality:
+      selector: rawTitle
+      filters:
+        - name: regexp
+          args: "\\b(2160p|1080p|720p|480p)\\b"
+    source:
+      selector: source
+    codec:
+      selector: codec
+    group:
+      selector: group
+    episodes:
+      selector: episodes
+    seasons:
+      selector: seasons
+    languages:
+      selector: languages
