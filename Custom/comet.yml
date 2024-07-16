@@ -6,9 +6,11 @@ type: public
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
-requestDelay: 2
+requestDelay: 15
 links:
   - https://comet.elfhosted.com
+  - http://comet:8000
+  - https://comet.davyjones.media
 
 caps:
   categories:
@@ -59,12 +61,12 @@ search:
 
   fields:
     title:
-      selector: title
+      selector: torrentTitle
       filters:
         - name: split
           args: ["\n", 0]
     year:
-      selector: title
+      selector: torrentTitle
       filters:
         - name: regexp
           args: "(\\b(19|20)\\d{2}\\b)"
