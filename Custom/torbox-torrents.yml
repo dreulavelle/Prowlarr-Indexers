@@ -91,3 +91,5 @@ search:
       text: "{{ .Result.date_in_days }} days"
       filters:
         - name: timeago
+    seeders:
+      selector: last_known_seeders
