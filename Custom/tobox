@@ -1,0 +1,95 @@
+---
+id: torbox-torrents
+name: Torbox Torrents
+description: "Torbox Torrents API (300 requests/min)"
+language: en-US
+type: public
+encoding: UTF-8
+followredirect: false
+testlinktorrent: false
+requestDelay: 2
+links:
+  - https://search-api.torbox.app
+caps:
+  categories:
+    Movies: Movies
+    TV: TV
+  modes:
+    search: [q]
+    tv-search: [q, imdbid, season, ep]
+    movie-search: [q, imdbid]
+  allowrawsearch: false
+
+settings:
+  - name: validation_label
+    type: info
+    label: Validation settings optional
+  - name: validate_imdb_movie_label
+    type: info
+    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
+  - name: validate_imdb_movie
+    type: text
+    label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
+    default: "tt0137523" # Fight Club
+  - name: validate_imdb_tv_label
+    type: info
+    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
+  - name: validate_imdb_tv
+    type: text
+    label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
+    default: "tt9288030" # Reacher S02E01
+
+search:
+  headers:
+    User-Agent:
+      [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0",
+      ]
+  paths:
+    - path: "{{ if .Query.IMDBID }}torrents/imdb:{{ .Query.IMDBID }}{{ else }}torrents/imdb:{{ .Config.validate_imdb_movie }}{{ end }}"
+      method: get
+      response:
+        type: json
+        noResultsMessage: "Could not find metadata. Please try again later."
+      categories: [Movies]
+    - path: "{{ if .Query.IMDBID }}torrents/imdb:{{ .Query.IMDBID }}{{else}}torrents/imdb:{{ .Config.validate_imdb_tv }}{{ end }}?Season:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}?Episode:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}"
+      method: get
+      response:
+        type: json
+        noResultsMessage: "Could not find metadata. Please try again later."
+      categories: [TV]
+
+  rows:
+    selector: data.torrents
+    count:
+      selector: data.total_torrents
+
+  fields:
+    title:
+      selector: raw_title
+    size:
+      selector: size
+    category_is_tv_show:
+      text: "{{ .Result.title }}"
+      filters:
+        - name: regexp
+          args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    category:
+      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    details:
+      text: "{{ .Config.sitelink }}"
+    magnet:
+      selector: magnet
+    year:
+      selector: title
+      filters:
+        - name: regexp
+          args: "(\\b(19|20)\\d\\d\\b)"
+    date_in_days:
+      selector: age
+    date:
+      text: "{{ .Result.date_in_days }} days"
+      filters:
+        - name: timeago
+    seeders:
+      selector: last_known_seeders
