@@ -1,0 +1,94 @@
+id: comet
+name: Comet
+description: "A custom Prowlarr indexer for the Comet torrent/debrid search add-on."
+language: en-US
+type: public
+encoding: UTF-8
+followredirect: false
+testlinktorrent: false
+requestDelay: 15
+links:
+  - https://comet.elfhosted.com
+  - http://comet:8000
+  - https://comet.davyjones.media
+
+caps:
+  categories:
+    Movies: Movies
+    TV: TV
+  modes:
+    search: [q]
+    movie-search: [q, imdbid]
+    tv-search: [q, imdbid, season, ep]
+  allowrawsearch: false
+settings:
+  - name: b64config
+    type: text
+    label: Base64 Encoded Configuration
+    default: ""
+  - name: validate_imdb_movie
+    type: text
+    label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
+    default: "tt0137523"
+  - name: validate_imdb_tv
+    type: text
+    label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
+    default: "tt9288030"
+search:
+  headers:
+    User-Agent:
+      [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0",
+      ]
+  paths:
+    - path: /{{ .Config.b64config }}/stream/movie/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_movie }}{{ end }}.json
+      method: get
+      response:
+        type: json
+        noResultsMessage: '"streams": []'
+      categories: [Movies]
+
+    - path: /{{ .Config.b64config }}/stream/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json
+      method: get
+      response:
+        type: json
+        noResultsMessage: '"streams": []'
+      categories: [TV]
+
+  rows:
+    selector: streams
+    missingAttributeEqualsNoResults: true
+
+  fields:
+    title:
+      selector: torrentTitle
+      filters:
+        - name: split
+          args: ["\n", 0]
+    year:
+      selector: torrentTitle
+      filters:
+        - name: regexp
+          args: "(\\b(19|20)\\d{2}\\b)"
+    category_is_tv_show:
+      text: "{{ .Result.title }}"
+      filters:
+        - name: regexp
+          args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    category:
+      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    infohash:
+      selector: url
+      filters:
+        - name: regexp
+          args: "/playback/([^/]+)"
+    size:
+      selector: title
+      filters:
+        - name: regexp
+          args: "💾 (\\d+(?:\\.\\d+)? (?:MB|GB))"
+    quality:
+      selector: name
+      filters:
+        - name: regexp
+          args: "\\b(2160p|1080p|720p|480p)\\b"
