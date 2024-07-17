@@ -1,7 +1,7 @@
 ---
 id: torbox-torrents
-name: Torbox Torrents
-description: "Torbox Torrents API (300 requests/min)"
+name: TorBox Torrents
+description: "Torbox Torrents (300 requests/min)"
 language: en-US
 type: public
 encoding: UTF-8
