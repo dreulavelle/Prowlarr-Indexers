@@ -10,7 +10,6 @@ requestDelay: 15
 links:
   - https://comet.elfhosted.com
   - http://comet:8000
-  - https://comet.davyjones.media
 
 caps:
   categories:
