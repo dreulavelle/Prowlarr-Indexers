@@ -45,7 +45,7 @@ search:
         type: json
       categories: [Movies]
 
-    - path: /?keyapp=FGJKJFEBRHEMRFGSBGDLFPRGED96LJJL&keyuser={{ .Config.api_token }}&debridlookup=realdebrid&streamtype=torrent&mode=stream&action=retrieve&type=show&idimdb={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.default_tv_query }}{{ end }}&numberseason={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}&numberepisode={{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}&limitcount={{ .Config.max_results }}
+    - path: /?keyapp=FGJKJFEBRHEMRFGSBGDLFPRGED96LJJL&keyuser={{ .Config.api_token }}&debridlookup=realdebrid&streamtype=torrent&mode=stream&action=retrieve&type=show&idimdb={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.default_tv_query }}{{ end }}&numberseason={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}{{ if .Query.Ep }}&numberepisode={{ .Query.Ep }}{{ else }}{{ end }}&limitcount={{ .Config.max_results }}
       method: get
       response:
         type: json
