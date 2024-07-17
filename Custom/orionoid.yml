@@ -1,0 +1,88 @@
+id: orionoid
+name: Orionoid
+description: "Orionoid Indexer"
+language: en-US
+type: public
+encoding: UTF-8
+followredirect: false
+testlinktorrent: false
+requestDelay: 2
+links:
+  - https://api.orionoid.com
+
+caps:
+  categories:
+    Movies: Movies
+    TV: TV
+  modes:
+    search: [q]
+    movie-search: [q, imdbid]
+    tv-search: [q, imdbid, season, ep]
+  allowrawsearch: false
+settings:
+  - name: api_token
+    type: password
+    label: Orionoid API Token
+    default: ""
+  - name: default_movie_query
+    label: "Default Movie Imdb Query"
+    type: text
+    default: "tt0137523"
+  - name: default_tv_query
+    type: text
+    label: "Default TV Imdb Query"
+    default: "tt9288030"
+  - name: max_results
+    type: text
+    label: "Max Results Returned - 10 Recommended."
+    default: "10"
+
+search:
+  paths:
+    - path: /?keyapp=FGJKJFEBRHEMRFGSBGDLFPRGED96LJJL&keyuser={{ .Config.api_token }}&debridlookup=realdebrid&streamtype=torrent&mode=stream&action=retrieve&type=movie&sortvalue=videoquality&sortorder=ascending&idimdb={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.default_movie_query }}{{ end }}&limitcount={{ .Config.max_results }}
+      method: get
+      response:
+        type: json
+      categories: [Movies]
+
+    - path: /?keyapp=FGJKJFEBRHEMRFGSBGDLFPRGED96LJJL&keyuser={{ .Config.api_token }}&debridlookup=realdebrid&streamtype=torrent&mode=stream&action=retrieve&type=show&idimdb={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.default_tv_query }}{{ end }}&numberseason={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}&numberepisode={{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}&limitcount={{ .Config.max_results }}
+      method: get
+      response:
+        type: json
+      categories: [TV]
+
+  rows:
+    selector: $.data.streams
+    missingAttributeEqualsNoResults: true
+
+  fields:
+    title:
+      selector: file.name
+    year:
+      selector: file.name
+      filters:
+        - name: regexp
+          args: "(\\b(19|20)\\d{2}\\b)"
+    category_is_tv_show:
+      selector: file.name
+      filters:
+        - name: regexp
+          args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    category:
+      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    infohash:
+      selector: file.hash
+    size:
+      selector: file.size
+    quality:
+      selector: video.quality
+    source:
+      selector: stream.source
+    codec:
+      selector: video.codec
+    group:
+      selector: meta.uploader
+    magnetlink:
+      selector: links[0]
+    download_link:
+      selector: links[0]
