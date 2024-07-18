@@ -21,6 +21,7 @@ caps:
     tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
 
+
 settings:
   - name: opt_label
     type: info
@@ -46,31 +47,28 @@ settings:
       premiumize: Premiumize
       debridlink: Debridlink
       offcloud: Offcloud
-      putio: Put.io
+      putio: Put.io    
   - name: validation_label
     type: info
-    label: Validation settings optional
+    label: Validation settings optional   
   - name: validate_imdb_movie_label
     type: info
     label: The following help to validate an indexer in Sonarr by confirming that the show returns results
   - name: validate_imdb_movie
     type: text
     label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
-    default: "tt0137523" # Fight Club
+    default: "tt0137523"  # Fight Club
   - name: validate_imdb_tv_label
     type: info
     label: The following help to validate an indexer in Sonarr by confirming that the show returns results
   - name: validate_imdb_tv
     type: text
     label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
-    default: "tt9288030" # Reacher S02E01
+    default: "tt9288030"  # Reacher S02E01
 
 search:
   headers:
-    User-Agent:
-      [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0",
-      ]
+    User-Agent: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"]
   paths:
     - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}/stream/movie/{{ .Config.validate_imdb_movie }}.json{{ end }}"
       method: get
@@ -84,6 +82,7 @@ search:
         type: json
         noResultsMessage: '"streams": []'
       categories: [TV]
+
 
   rows:
     selector: streams
@@ -108,14 +107,12 @@ search:
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
     infohash:
-      selector: infoHash
+      selector: url
+      filters:
+        - name: split
+          args: ["/", 5]
     size:
       selector: title
       filters:
         - name: regexp
           args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
-    seeders:
-      selector: title
-      filters:
-        - name: regexp
-          args: "(?<=👤 )(\\d+)"
