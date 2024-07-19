@@ -63,7 +63,7 @@ This README will guide you through the process of adding Torrentio as a custom i
    - Go to the Indexers page in Prowlarr.
    - Click the "+" button to add a new indexer.
    - Enter "Torrentio" and search, select Torrentio from the list.
-   - Edit the default options if necessary.
+   - Edit the default options if necessary and do not forget to add your Real Debrid API key in index options.
    - Save your changes.
 
 6. **Using Torrentio as a Search Source**
