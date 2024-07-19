@@ -90,3 +90,8 @@ search:
       selector: seasons
     languages:
       selector: languages
+    seeders:
+      text: "30"
+    leechers:
+      text: "10"
+    
