@@ -31,7 +31,7 @@ settings:
   - name: default_tv_query
     type: text
     label: "Default TV Imdb Query"
-    default: "tt9288030"
+    default: "tt18482892"
   - name: max_results
     type: text
     label: "Max Results Returned - 10 Recommended."
@@ -39,13 +39,13 @@ settings:
 
 search:
   paths:
-    - path: /?keyapp=FGJKJFEBRHEMRFGSBGDLFPRGED96LJJL&keyuser={{ .Config.api_token }}&debridlookup=realdebrid&streamtype=torrent&mode=stream&action=retrieve&type=movie&sortvalue=videoquality&sortorder=ascending&idimdb={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.default_movie_query }}{{ end }}&limitcount={{ .Config.max_results }}
+    - path: /?keyapp=FGJKJFEBRHEMRFGSBGDLFPRGED96LJJL&keyuser={{ .Config.api_token }}&streamtype=torrent&mode=stream&action=retrieve&type=movie&sortvalue=videoquality&sortorder=ascending&idimdb={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.default_movie_query }}{{ end }}&limitcount={{ .Config.max_results }}
       method: get
       response:
         type: json
       categories: [Movies]
 
-    - path: /?keyapp=FGJKJFEBRHEMRFGSBGDLFPRGED96LJJL&keyuser={{ .Config.api_token }}&debridlookup=realdebrid&streamtype=torrent&mode=stream&action=retrieve&type=show&idimdb={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.default_tv_query }}{{ end }}&numberseason={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}{{ if .Query.Ep }}&numberepisode={{ .Query.Ep }}{{ else }}{{ end }}&limitcount={{ .Config.max_results }}
+    - path: /?keyapp=FGJKJFEBRHEMRFGSBGDLFPRGED96LJJL&keyuser={{ .Config.api_token }}&streamtype=torrent&mode=stream&action=retrieve&type=show&idimdb={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.default_tv_query }}{{ end }}&numberseason={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}{{ if .Query.Ep }}&numberepisode={{ .Query.Ep }}{{ else }}{{ end }}&limitcount={{ .Config.max_results }}
       method: get
       response:
         type: json
@@ -86,3 +86,7 @@ search:
       selector: links[0]
     download_link:
       selector: links[0]
+    seeders:
+      text: "30"
+    leechers:
+      text: "10"
