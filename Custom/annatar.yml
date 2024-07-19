@@ -6,7 +6,7 @@ type: public
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
-requestDelay: 2
+requestDelay: 15
 links:
   - https://annatar.elfhosted.com
   - http://annatar:8000
@@ -14,50 +14,61 @@ caps:
   categories:
     Movies: Movies
     TV: TV
+
   modes:
     search: [q]
     movie-search: [q, imdbid]
     tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
+
 settings:
+  - name: rdkey_label
+    type: info
+    label: Debrid settings required
   - name: debrid_provider_key
     type: text
     label: Debrid provider API Key
-    default: "YOUR_DEBRID_API_KEY" #Replace with your original Debrid Provider Key
+    default: "your_debrid_api_key" #Replace with your original Debrdi Provider Key
   - name: debrid_provider
     type: text
     label: Debrid provider
     default: real_debrid
+  - name: validation_label
+    type: info
+    label: Validation settings optional
+  - name: validate_imdb_movie_label
+    type: info
+    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
   - name: validate_imdb_movie
     type: text
     label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
     default: "tt0137523" # Fight Club
+  - name: validate_imdb_tv_label
+    type: info
+    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
   - name: validate_imdb_tv
     type: text
     label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
     default: "tt9288030" # Reacher S02E01
   - name: limit
     type: text
-    label: Maximum Resuts Allowed Per Resolution 15
+    label: Maximum Resuts Allowed 15
     default: 10 # Default limit
-  - name: default_season
-    type: text
-    label: Default Season
-    default: 1
-  - name: default_episode
-    type: text
-    label: Default Episode
-    default: 1
+
 search:
+  headers:
+    User-Agent:
+      [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0",
+      ]
   paths:
-    - path: "{{ if .Query.IMDBID }}/search/cached/{{ .Config.debrid_provider }}/movie/{{ .Query.IMDBID }}?debrid_api_key={{ .Config.debrid_provider_key }}&limit={{ .Config.limit }}{{ else }}/search/cached/{{ .Config.debrid_provider }}/movie/{{ .Config.validate_imdb_movie }}?debrid_api_key={{ .Config.debrid_provider_key }}&limit={{ .Config.limit }}{{ end }}"
+    - path: /search/cached/{{ .Config.debrid_provider }}/movie/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_movie }}{{ end }}?debrid_api_key={{ .Config.debrid_provider_key }}&limit={{ .Config.limit }}
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       categories: [Movies]
-
-    - path: "{{ if and .Query.IMDBID .Query.Ep }}/search/cached/{{ .Config.debrid_provider }}/series/{{ .Query.IMDBID }}?season={{ .Query.Season }}&episode={{ .Query.Ep }}&limit={{ .Config.limit }}&debrid_api_key={{ .Config.debrid_provider_key }}{{ else }}/search/cached/{{ .Config.debrid_provider }}/series/{{ .Config.validate_imdb_tv }}?season={{ .Config.default_season }}&episode={{ .Config.default_episode }}&limit={{ .Config.limit }}&debrid_api_key={{ .Config.debrid_provider_key }}{{ end }}"
+    - path: /search/cached/{{ .Config.debrid_provider }}/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}?debrid_api_key={{ .Config.debrid_provider_key }}&season={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}&episode={{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}&limit={{ .Config.limit }}
       method: get
       response:
         type: json
@@ -67,14 +78,13 @@ search:
   rows:
     selector: streams
     missingAttributeEqualsNoResults: true
+
   fields:
     title:
       selector: title
       filters:
         - name: split
           args: ["\n", 0]
-    details:
-      selector: url
     year:
       selector: title
       filters:
@@ -97,3 +107,7 @@ search:
       filters:
         - name: regexp
           args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
+    seeders:
+      text: "30"
+    leechers:
+      text: "10"
