@@ -82,7 +82,8 @@ search:
         - name: regexp
           args: "/playback/([^/]+)"
     size:
-      selector: torrentSize
+      text: "{{ if .Result.torrentSize }}{{ .Result.torrentSize }}{{ else }}{{ .Result.title | regexp '💾 (\\d+(?:\\.\\d+)? (?:MB|GB))' }}{{ end }}"
+
     quality:
       selector: name
       filters:
