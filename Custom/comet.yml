@@ -90,6 +90,6 @@ search:
         - name: regexp
           args: "\\b(2160p|1080p|720p|480p)\\b"
     seeders:
-      text: "30"  # Default seeder count
+      text: "30"
     leechers:
-      text: "10"
+      text: "0"
