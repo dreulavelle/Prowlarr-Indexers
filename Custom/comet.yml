@@ -74,6 +74,18 @@ search:
       filters:
         - name: regexp
           args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    indexer_is_torrentio:
+      selector: title
+      filters:
+        - name: regexp
+          args: "Torrentio"
+    torrentio_size:
+      selector: title
+      filters:
+        - name: regexp
+          args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
+    torrentSize:
+      selector: torrentSize
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
     infohash:
@@ -82,8 +94,10 @@ search:
         - name: regexp
           args: "/playback/([^/]+)"
     size:
-      text: "{{ if .Result.torrentSize }}{{ .Result.torrentSize }}{{ else }}{{ .Result.title | regexp '💾 (\\d+(?:\\.\\d+)? (?:MB|GB))' }}{{ end }}"
-
+      text: "{{ if .Result.indexer_is_torrentio }}{{ .Result.torrentio_size }}{{ else }}{{ .Result.torrentSize }}{{ end }}"
+      filters:
+        - name: default
+          args: "{{ .Result.torrentSize }}"
     quality:
       selector: name
       filters:
