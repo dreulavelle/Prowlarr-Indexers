@@ -95,9 +95,6 @@ search:
           args: "/playback/([^/]+)"
     size:
       text: "{{ if .Result.indexer_is_torrentio }}{{ .Result.torrentio_size }}{{ else }}{{ .Result.torrentSize }}{{ end }}"
-      filters:
-        - name: default
-          args: "{{ .Result.torrentSize }}"
     quality:
       selector: name
       filters:
