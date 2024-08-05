@@ -84,7 +84,7 @@ search:
       filters:
         - name: regexp
           args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
-    torrentSize:
+    torrent_size:
       selector: torrentSize
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
@@ -94,15 +94,21 @@ search:
         - name: regexp
           args: "/playback/([^/]+)"
     size:
-      text: "{{ if .Result.indexer_is_torrentio }}{{ .Result.torrentio_size }}{{ else }}{{ .Result.torrentSize }}{{ end }}"
-      filters:
-        - name: default
-          args: "{{ .Result.torrentSize }}"
+      text: "{{ if .Result.torrent_size }}{{ .Result.torrent_size }}{{ else }}{{ .Result.torrentio_size }}{{ end }}"
     quality:
       selector: name
       filters:
         - name: regexp
           args: "\\b(2160p|1080p|720p|480p)\\b"
+    date:
+      text: "Apr. 18th '11"
+      filters:
+        - name: re_replace
+          args: ["st|nd|rd|th", ""]
+        - name: replace
+          args: ["'", ""]
+        - name: dateparse
+          args: "MMM. d yy"
     seeders:
       text: "30"
     leechers:
