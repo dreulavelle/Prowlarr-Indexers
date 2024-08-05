@@ -21,6 +21,10 @@ caps:
     tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
 settings:
+  - name: info
+    type: info
+    label: Base64 config
+    default: "Complete your configuration and copy the generated link.<br/> Paste the link into your browser to find your code eg. http://host_ip:8000/base64_string/manifest.json."
   - name: b64config
     type: text
     label: Base64 Encoded Configuration
