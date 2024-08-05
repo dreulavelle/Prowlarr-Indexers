@@ -21,6 +21,10 @@ caps:
     tv-search: [q, imdbid, season, ep]
   allowrawsearch: false
 settings:
+  - name: info
+    type: info
+    label: Base64 config
+    default: "Complete your configuration and copy the generated link.<br/> Paste the link into your browser to find your code eg. http://host_ip:8000/base64_string/manifest.json."
   - name: b64config
     type: text
     label: Base64 Encoded Configuration
@@ -84,7 +88,7 @@ search:
       filters:
         - name: regexp
           args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
-    torrentSize:
+    torrent_size:
       selector: torrentSize
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
@@ -94,15 +98,21 @@ search:
         - name: regexp
           args: "/playback/([^/]+)"
     size:
-      text: "{{ if .Result.indexer_is_torrentio }}{{ .Result.torrentio_size }}{{ else }}{{ .Result.torrentSize }}{{ end }}"
-      filters:
-        - name: default
-          args: "{{ .Result.torrentSize }}"
+      text: "{{ if .Result.torrent_size }}{{ .Result.torrent_size }}{{ else }}{{ .Result.torrentio_size }}{{ end }}"
     quality:
       selector: name
       filters:
         - name: regexp
           args: "\\b(2160p|1080p|720p|480p)\\b"
+    date:
+      text: "Apr. 18th '11"
+      filters:
+        - name: re_replace
+          args: ["st|nd|rd|th", ""]
+        - name: replace
+          args: ["'", ""]
+        - name: dateparse
+          args: "MMM. d yy"
     seeders:
       text: "30"
     leechers:
