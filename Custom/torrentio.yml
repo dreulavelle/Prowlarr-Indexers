@@ -92,3 +92,12 @@ search:
       filters:
         - name: regexp
           args: "(\\uD83D\\uDC64 \\d+)"
+        date:
+      text: "Apr. 18th '11"
+      filters:
+        - name: re_replace
+          args: ["st|nd|rd|th", ""]
+        - name: replace
+          args: ["'", ""]
+        - name: dateparse
+          args: "MMM. d yy"
