@@ -90,3 +90,8 @@ search:
       text: "30"
     leechers:
       text: "10"
+    date:
+      selector: time.updated
+      filters:
+        - name: timestamp
+          args: "%Y-%m-%d %H:%M:%S"
