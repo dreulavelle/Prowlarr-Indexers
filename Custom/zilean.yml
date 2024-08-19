@@ -29,7 +29,7 @@ settings:
 
 search:
   paths:
-    - path: /dmm/filtered?Query={{ if .Keywords }}{{ .Keywords }}{{ else }}{{ .Config.default_movie_query }}{{ end }}{{ if .Query.Year }}&Year={{ .Query.Year }}{{ else }}{{ end }}
+    - path: /dmm/filtered?{{ if .Query.IMDBID }}ImdbId={{ .Query.IMDBID }}{{ else }}Query={{ .Config.default_movie_query }}{{ end }}
       method: get
       response:
         type: json
@@ -56,40 +56,33 @@ search:
 
   fields:
     title:
-      selector: rawTitle
+      selector: raw_title
     year:
-      selector: rawTitle
-      filters:
-        - name: regexp
-          args: "(\\b(19|20)\\d{2}\\b)"
-    category_is_tv_show:
-      selector: rawTitle
-      filters:
-        - name: regexp
-          args: "\\b(S\\d+(?:E\\d+)?)\\b"
+      selector: year
     category:
-      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+      selector: category
+      filters:
+        - name: replace
+          args: ["tvSeries", "TV"]
+        - name: replace
+          args: ["movie", "Movies"]
     infohash:
-      selector: infoHash
+      selector: info_hash
     size:
       selector: size
     quality:
-      selector: rawTitle
+      selector: resolution
       filters:
-        - name: regexp
-          args: "\\b(2160p|1080p|720p|480p)\\b"
-    source:
-      selector: source
+        - name: replace
+          args: ["4k", "2160p"]
     codec:
       selector: codec
-    group:
-      selector: group
-    episodes:
-      selector: episodes
-    seasons:
-      selector: seasons
-    languages:
-      selector: languages
+    episode:
+      selector: episode
+    season:
+      selector: season
+    language:
+      selector: language
     seeders:
       text: "30"
     leechers:
@@ -103,3 +96,4 @@ search:
           args: ["'", ""]
         - name: dateparse
           args: "MMM. d yy"
+    
