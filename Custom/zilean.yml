@@ -16,8 +16,8 @@ caps:
     TV: TV
   modes:
     search: [q]
-    movie-search: [q, year]
-    tv-search: [q, year, season, ep]
+    movie-search: [q, imdbid]
+    tv-search: [q, season, ep]
   allowrawsearch: false
 settings:
   - name: default_movie_query
@@ -36,7 +36,6 @@ search:
       categories: [Movies]
 
     - path: /dmm/filtered?Query={{ if .Keywords }}{{ .Keywords }}{{ else }}{{ .Config.default_tv_query }}{{ end }}&Season={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}{{ if .Query.Ep }}&Episode={{ .Query.Ep }}{{ else }}{{ end }}
-
       method: get
       response:
         type: json
