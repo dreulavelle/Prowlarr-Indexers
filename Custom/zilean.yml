@@ -19,27 +19,20 @@ caps:
     movie-search: [q, imdbid]
     tv-search: [q, season, ep]
   allowrawsearch: false
-settings:
-  - name: default_movie_query
-    type: text
-    default: "Guardians of the Galaxy"
-  - name: default_tv_query
-    type: text
-    default: "House of the Dragon"
+
+settings: []
 
 search:
   paths:
-    - path: /dmm/filtered?{{ if .Query.IMDBID }}ImdbId={{ .Query.IMDBID }}{{ else }}Query={{ .Config.default_movie_query }}{{ end }}
+    - path: /dmm/filtered
       method: get
       response:
         type: json
-      categories: [Movies]
 
-    - path: /dmm/filtered?Query={{ if .Keywords }}{{ .Keywords }}{{ else }}{{ .Config.default_tv_query }}{{ end }}&Season={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}{{ if .Query.Ep }}&Episode={{ .Query.Ep }}{{ else }}{{ end }}
-      method: get
-      response:
-        type: json
-      categories: [TV]
+  inputs:
+    $raw: "{{ if .Query.IMDBID }}ImdbId={{ .Query.IMDBID }}{{ else }}Query={{ .Keywords }}{{ end }}"
+    Season: "{{ if .Query.Season }}{{ .Query.Season }}{{ else }}{{ end }}"
+    Episode: "{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}{{ end }}"
     
   keywordsfilters:
     - name: re_replace
@@ -48,6 +41,8 @@ search:
       args: ["\\b(19|20)\\d{2}\\b", ""]  # Remove year info
     - name: re_replace
       args: ["[\\[\\]()]", ""]  # Remove brackets
+    - name: re_replace
+      args: ["^$", "serenity"]
 
   rows:
     selector: $
@@ -95,4 +90,7 @@ search:
           args: ["'", ""]
         - name: dateparse
           args: "MMM. d yy"
-    
+    downloadvolumefactor:
+      text: "1"
+    uploadvolumefactor:
+      text: "1"
