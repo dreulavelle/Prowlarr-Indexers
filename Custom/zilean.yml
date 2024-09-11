@@ -72,11 +72,11 @@ search:
     codec:
       selector: codec
     episode:
-      selector: episode
+      selector: episodes
     season:
-      selector: season
+      selector: seasons
     language:
-      selector: language
+      selector: languages
     seeders:
       text: "30"
     leechers:
