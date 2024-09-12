@@ -42,7 +42,7 @@ search:
     - name: re_replace
       args: ["[\\[\\]()]", ""]  # Remove brackets
     - name: re_replace
-      args: ["^$", "serenity"]
+      args: ["^$", "limitless"]
 
   rows:
     selector: $
