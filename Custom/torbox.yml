@@ -52,7 +52,7 @@ search:
         type: json
         noResultsMessage: "Could not find metadata. Please try again later."
       categories: [Movies]
-    - path: "{{ if .Query.IMDBID }}torrents/imdb:{{ .Query.IMDBID }}{{else}}torrents/imdb:{{ .Config.validate_imdb_tv }}{{ end }}?Season:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}?Episode:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}"
+    - path: "{{ if .Query.IMDBID }}torrents/imdb:{{ .Query.IMDBID }}{{else}}torrents/imdb:{{ .Config.validate_imdb_tv }}{{ end }}?season={{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}&episode={{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}"
       method: get
       response:
         type: json
