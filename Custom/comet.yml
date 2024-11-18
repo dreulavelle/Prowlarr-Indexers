@@ -79,7 +79,7 @@ search:
         - name: regexp
           args: "\\b(S\\d+(?:E\\d+)?)\\b"
     indexer_is_torrentio:
-      selector: title
+      selector: description
       filters:
         - name: regexp
           args: "Torrentio"
