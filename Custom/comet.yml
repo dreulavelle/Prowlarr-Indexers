@@ -84,7 +84,7 @@ search:
         - name: regexp
           args: "Torrentio"
     torrentio_size:
-      selector: title
+      selector: description
       filters:
         - name: regexp
           args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
