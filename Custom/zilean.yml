@@ -9,6 +9,7 @@ testlinktorrent: false
 requestDelay: 2
 links:
   - http://zilean:8181
+  - https://zilean.elfhosted.com
 
 caps:
   categories:
