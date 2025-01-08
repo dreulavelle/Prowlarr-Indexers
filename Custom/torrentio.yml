@@ -1,6 +1,6 @@
 ---
 id: torrentio
-name: torrenio
+name: Torrentio
 description: "Torrentio Indexer"
 language: en-US
 type: public
@@ -10,6 +10,7 @@ testlinktorrent: false
 requestDelay: 2
 links:
   - https://torrentio.strem.fun/
+
 caps:
   categories:
     Movies: Movies
@@ -31,57 +32,28 @@ settings:
     default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|sort=qualitysize|qualityfilter=480p,scr,cam"
   - name: rdkey_label
     type: info
-    label: Debrid settings required
-  - name: debrid_provider_key
+    label: Real-Debrid API Key Required
+  - name: rd_key
     type: text
-    label: Debrid provider API Key
+    label: Real-Debrid API Key
     default: ""
-  - name: debrid_provider
-    type: select
-    label: Debrid provider
-    default: realdebrid
-    options:
-      realdebrid: Real-Debrid
-      alldebrid: AllDebrid
-      premiumize: Premiumize
-      debridlink: Debridlink
-      offcloud: Offcloud
-      putio: Put.io    
-  - name: validation_label
-    type: info
-    label: Validation settings optional   
-  - name: validate_imdb_movie_label
-    type: info
-    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
-  - name: validate_imdb_movie
-    type: text
-    label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
-    default: "tt0137523"  # Fight Club
-  - name: validate_imdb_tv_label
-    type: info
-    label: The following help to validate an indexer in Sonarr by confirming that the show returns results
-  - name: validate_imdb_tv
-    type: text
-    label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
-    default: "tt9288030"  # Reacher S02E01
 
 search:
   headers:
     User-Agent: ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0"]
   paths:
-    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}/stream/movie/{{ .Config.validate_imdb_movie }}.json{{ end }}"
+    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}|realdebrid={{ .Config.rd_key }}|debridoptions=nocatalog/stream/movie/{{ .Query.IMDBID }}.json{{ else }}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|sort=size|limit=1|realdebrid={{ .Config.rd_key }}|debridoptions=nocatalog/stream/movie/tt0137523.json{{ end }}"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       categories: [Movies]
-    - path: "{{ if .Query.IMDBID }}{{ .Config.default_opts }}{{else}}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1{{ end }}|{{ .Config.debrid_provider }}={{ .Config.debrid_provider_key }}/stream/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID}}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json"
+    - path: "{{ if .Query.IMDBIDShort }}{{ .Config.default_opts }}{{else}}providers=rarbg,1337x|sort=size|qualityfilter=brremux,hdrall,dolbyvision,4k,720p,480p,other,scr,cam,unknown|limit=1{{ end }}|realdebrid={{ .Config.rd_key }}|debridoptions=nocatalog/stream/series/tt{{ if .Query.IMDBIDShort }}{{ .Query.IMDBIDShort }}{{ else }}1632701{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json"
       method: get
       response:
         type: json
         noResultsMessage: '"streams": []'
       categories: [TV]
-
 
   rows:
     selector: streams
@@ -115,3 +87,17 @@ search:
       filters:
         - name: regexp
           args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
+    seeders:
+      selector: title
+      filters:
+        - name: regexp
+          args: "(\\uD83D\\uDC64 \\d+)"
+    date:
+      text: "Apr. 18th '11"
+      filters:
+        - name: re_replace
+          args: ["st|nd|rd|th", ""]
+        - name: replace
+          args: ["'", ""]
+        - name: dateparse
+          args: "MMM. d yy"
