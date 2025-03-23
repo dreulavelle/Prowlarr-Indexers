@@ -64,12 +64,12 @@ search:
 
   fields:
     title:
-      selector: torrentTitle
+      selector: description
       filters:
         - name: split
           args: ["\n", 0]
     year:
-      selector: torrentTitle
+      selector: description
       filters:
         - name: regexp
           args: "(\\b(19|20)\\d{2}\\b)"
@@ -89,7 +89,7 @@ search:
         - name: regexp
           args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
     torrent_size:
-      selector: torrentSize
+      selector: behaviorHints.videoSize
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
     infohash:
