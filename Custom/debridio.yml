@@ -2,7 +2,7 @@ id: debridio
 name: Debridio
 description: "Debridio API"
 language: en-US
-type: public
+type: private
 encoding: UTF-8
 followredirect: false
 testlinktorrent: false
