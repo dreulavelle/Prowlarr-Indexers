@@ -1,0 +1,74 @@
+id: debridio
+name: Debridio
+description: "Debridio API"
+language: en-US
+type: private
+encoding: UTF-8
+followredirect: false
+testlinktorrent: false
+requestDelay: 2
+links:
+  - https://debapi.debridio.com/
+
+caps:
+  categories:
+    Movies: Movies
+    TV: TV
+
+  modes:
+    search: [q]
+    movie-search: [q, imdbid]
+    tv-search: [q, imdbid]
+  allowrawsearch: false
+settings:
+  - name: api_token
+    type: password
+    label: Debridio.com API Key
+    default: ""
+  - name: default_movie_query
+    label: "Default Movie Imdb Query"
+    type: text
+    default: "tt0137523"
+  - name: default_tv_query
+    type: text
+    label: "Default TV Imdb Query"
+    default: "tt18482892"
+
+
+search:
+  paths:
+    - path: /{{ .Config.api_token }}/search/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.default_movie_query }}{{ end }}
+      method: get
+      response:
+        type: json
+      categories: [Movies]
+
+    - path: /{{ .Config.api_token }}/search/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.default_movie_query }}{{ end }}
+      method: get
+      response:
+        type: json
+      categories: [TV]
+
+  rows:
+    selector: "$"
+
+  fields:
+    title:
+      selector: name
+    infohash:
+      selector: hash
+    size:
+      selector: size
+    seeders:
+      selector: seeders
+    leechers:
+      text: "0"
+    category_is_tv_show:
+      text: "{{ .Result.title }}"
+      filters:
+        - name: regexp
+          args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    category:
+      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    indexer:
+      selector: indexer
