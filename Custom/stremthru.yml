@@ -1,0 +1,95 @@
+# =============================================#
+#         Property of Puks The Pirate.         #
+#----------------------------------------------#
+#  Savvy Guides:                               #
+#  https://savvyguides.wiki/sailarrsguide      #
+#                                              #
+#  Discord:                                    #
+#  https://discord.gg/vMSnNcd7m5               #
+#                                              #
+#  Donate:                                     #
+#  https://ko-fi.com/savvyservers/tip.         #
+# =============================================#
+
+id: stremthru
+name: Stremthru
+description: "A custom indexer for Stremthru"
+language: en-US
+type: public
+encoding: UTF-8
+followredirect: false
+testlinktorrent: false
+requestDelay: 2
+links:
+  - https://stremthru.savvyservers.org
+  - http://stremthru:8080
+
+caps:
+  categories:
+    Movies: Movies
+    TV: TV
+  modes:
+    search: [q]
+    movie-search: [q, imdbid]
+    tv-search: [q, season, ep]
+  allowrawsearch: false
+
+settings:
+  - name: validate_imdb_movie
+    type: text
+    label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
+    default: "tt7286456"
+  - name: validate_imdb_tv
+    type: text
+    label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
+    default: "tt3581920"
+
+search:
+  paths:
+    - path: /v0/torrents?no_missing_size=1&sid={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_movie }}{{ end }}
+      method: get
+      response:
+        type: json
+        noResultsMessage: '{"data":{"items":[],"total_items":0}}'
+      categories: [Movies]
+
+    - path: /v0/torrents?no_missing_size=1&sid={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}"
+      method: get
+      response:
+        type: json
+        noResultsMessage: '{"data":{"items":[],"total_items":0}}'
+      categories: [TV]
+
+  rows:
+    selector: $.data.items
+    missingAttributeEqualsNoResults: true
+
+  fields:
+    title:
+      selector: name
+    category_is_tv_show:
+      text: "{{ .Result.title }}"
+      filters:
+        - name: regexp
+          args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    category:
+      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    infohash:
+      selector: hash
+    size:
+      selector: size
+    language:
+      text: "English"
+    seeders:
+      text: "30"
+    leechers:
+      text: "10"
+    date:
+      text: "Apr. 18th '11"
+      filters:
+        - name: re_replace
+          args: ["st|nd|rd|th", ""]
+        - name: replace
+          args: ["'", ""]
+        - name: dateparse
+          args: "MMM. d yy"
