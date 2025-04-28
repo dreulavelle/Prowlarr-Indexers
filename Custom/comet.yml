@@ -51,11 +51,6 @@ settings:
     label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
     default: "tt9288030"
 search:
-  headers:
-    User-Agent:
-      [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0",
-      ]
   paths:
     - path: /{{ .Config.b64config }}/stream/movie/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_movie }}{{ end }}.json
       method: get
