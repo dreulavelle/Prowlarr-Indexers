@@ -110,7 +110,7 @@ search:
       selector: url
       filters:
         - name: split
-          args: ["/", 5]
+          args: ["/", 6]
     seeders:
       selector: title
       filters:
