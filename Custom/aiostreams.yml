@@ -1,0 +1,133 @@
+id: aiostreams
+name: AIOStreams
+description: "A custom Prowlarr indexer for the AIOStreams torrent/debrid search add-on."
+language: en-US
+type: public
+encoding: UTF-8
+followredirect: false
+testlinktorrent: false
+requestDelay: 5
+links:
+  - http://aiostreams:3000 # point towards your hosted instance
+
+caps:
+  categories:
+    Movies: Movies
+    TV: TV
+  modes:
+    search: [q]
+    movie-search: [q, imdbid]
+    tv-search: [q, imdbid, season, ep]
+  allowrawsearch: false
+settings:
+  - name: info
+    type: info
+    label: Base64 config
+    default: "Complete your configuration and copy the generated link.<br/> Paste the link into your browser to find your code eg. http://localhost:3000/stremio/uuid/base64_string/manifest.json."
+  - name: uuid
+    type: text
+    label: UUID
+    default: ""
+  - name: b64config
+    type: text
+    label: Base64 Encoded Configuration
+    default: ""
+  - name: validate_imdb_movie
+    type: text
+    label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
+    default: "tt0137523"
+  - name: validate_imdb_tv
+    type: text
+    label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
+    default: "tt9288030"
+search:
+  paths:
+    - path: /stremio/{{ .Config.uuid }}/{{ .Config.b64config }}/stream/movie/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_movie }}{{ end }}.json
+      method: get
+      response:
+        type: json
+        noResultsMessage: '"streams": []'
+      categories: [Movies]
+
+    - path: /stremio/{{ .Config.uuid }}/{{ .Config.b64config }}/stream/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json
+      method: get
+      response:
+        type: json
+        noResultsMessage: '"streams": []'
+      categories: [TV]
+  rows:
+    selector: streams
+    missingAttributeEqualsNoResults: true
+
+  fields:
+    parsed_title:
+      selector: behaviorHints.filename
+      optional: true
+      default: "Unknown Title"
+      filters:
+        - name: trim
+    title_fallback:
+      selector: streamData.filename
+      default: "Unknown Title"
+      filters:
+        - name: trim
+    title:
+      text: "{{ if .Result.parsed_title }}{{ .Result.parsed_title }}{{ else }}{{ .Result.title_fallback }}{{ end }}"
+    parsed_year:
+      selector: streamData.parsedFile.year
+      optional: true
+    year_fallback:
+      selector: description
+      filters:
+        - name: regexp
+          args: "(\\b(19|20)\\d{2}\\b)"
+    year:
+      text: "{{ if .Result.parsed_year }}{{ .Result.parsed_year }}{{ else }}{{ .Result.year_fallback }}{{ end }}"
+    category_is_tv_show:
+      selector: streamData.parsedFile.season
+      optional: true
+    category:
+      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    infohash:
+      optional: true
+      selector: streamData.torrent.infoHash
+      filters:
+        - name: trim
+        - name: regexp
+          args: ([A-F|a-f|0-9]{40})
+    parsed_size:
+      selector: streamData.size
+      optional: true
+    size_fallback:
+      selector: behaviorHints.videoSize
+      optional: true
+    size_description:
+      selector: description
+      filters:
+        - name: regexp
+          args: "\\b(\\d+(?:\\.\\d+)? [MG]B)\\b"
+    size:
+      text: "{{ if .Result.parsed_size }}{{ .Result.parsed_size }}{{ else if .Result.size_fallback }}{{ .Result.size_fallback }}{{ else }}{{ .Result.size_description }}{{ end }}"
+    parsed_quality:
+      selector: streamData.parsedFile.quality
+      optional: true
+    quality_fallback:
+      selector: name
+      filters:
+        - name: regexp
+          args: "\\b2160p|1080p|720p|480p\\b"
+    quality:
+      text: "{{ if .Result.parsed_quality }}{{ .Result.parsed_quality }}{{ else }}{{ .Result.quality_fallback }}{{ end }}"
+    date:
+      text: "Apr. 18th '11"
+      filters:
+        - name: re_replace
+          args: ["st|nd|rd|th", ""]
+        - name: replace
+          args: ["'", ""]
+        - name: dateparse
+          args: "MMM. d yy"
+    seeders:
+      text: "30"
+    leechers:
+      text: "0"
