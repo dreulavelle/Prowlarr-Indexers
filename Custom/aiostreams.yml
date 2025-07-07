@@ -90,7 +90,12 @@ search:
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
     infohash:
+      optional: true
       selector: streamData.torrent.infoHash
+      filters:
+        - name: trim
+        - name: regexp
+          args: ([A-F|a-f|0-9]{40})
     parsed_size:
       selector: streamData.size
       optional: true
