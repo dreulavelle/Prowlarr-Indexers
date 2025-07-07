@@ -9,7 +9,6 @@ testlinktorrent: false
 requestDelay: 5
 links:
   - http://aiostreams:3000 # point towards your hosted instance
-  - https://aiostreams.elfhosted.com # point towards elfhosted - Note: This is a free service and may be slow or rate limited at times.
 
 caps:
   categories:
