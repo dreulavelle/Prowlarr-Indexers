@@ -107,10 +107,7 @@ search:
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
     infohash:
-      selector: url
-      filters:
-        - name: split
-          args: ["/", 6]
+      selector: infoHash
     seeders:
       selector: title
       filters:
