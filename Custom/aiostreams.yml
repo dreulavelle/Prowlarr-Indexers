@@ -41,6 +41,11 @@ settings:
     label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
     default: "tt9288030"
 search:
+  headers:
+    User-Agent:
+      [
+        "AIOStreams/1.0",
+      ]
   paths:
     - path: /stremio/{{ .Config.uuid }}/{{ .Config.b64config }}/stream/movie/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_movie }}{{ end }}.json
       method: get
