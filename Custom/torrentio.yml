@@ -40,7 +40,7 @@ settings:
   - name: debrid_provider
     type: select
     label: Debrid provider
-    default: torbox
+    default: realdebrid
     options:
       realdebrid: Real-Debrid
       alldebrid: AllDebrid
