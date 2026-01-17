@@ -29,7 +29,7 @@ settings:
   - name: default_opts
     type: text
     label: Torrentio Options
-    default: "providers=yts,eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi|sort=qualitysize|qualityfilter=480p,scr,cam"
+    default: "providers=eztv,rarbg,1337x,thepiratebay,kickasstorrents,torrentgalaxy,magnetdl,horriblesubs,nyaasi,tokyotosho,anidex,rutor,rutracker,comando,bludv,torrent9,ilcorsaronero,mejortorrent,wolfmax4k,cinecalidad,besttorrents|sort=qualitysize|qualityfilter=scr,cam"
   - name: rdkey_label
     type: info
     label: Real-Debrid API Key Required
@@ -48,6 +48,7 @@ settings:
       debridlink: Debridlink
       offcloud: Offcloud
       putio: Put.io
+      torbox: Torbox
   - name: validation_label
     type: info
     label: Validation settings optional
