@@ -59,7 +59,7 @@ search:
         noResultsMessage: '"streams": []'
       categories: [Movies]
 
-    - path: /{{ .Config.b64config }}/stream/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}.json
+    - path: /{{ .Config.b64config }}/stream/series/{{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}{{ if .Query.Ep }}:{{ .Query.Ep }}{{ else }}{{ end }}.json
       method: get
       response:
         type: json
