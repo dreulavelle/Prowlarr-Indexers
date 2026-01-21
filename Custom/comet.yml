@@ -67,7 +67,7 @@ search:
       categories: [TV]
 
   rows:
-    selector: streams
+    selector: streams:has(behaviorHints)
     missingAttributeEqualsNoResults: true
 
   fields:
