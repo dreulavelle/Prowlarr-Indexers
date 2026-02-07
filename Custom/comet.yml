@@ -101,10 +101,10 @@ search:
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
     infohash:
-      selector: url
+      selector: behaviorHints.bingeGroup
       filters:
-        - name: regexp
-          args: "/playback/([^/]+)"
+        - name: split
+          args: ["|", 2]
     size:
       text: "{{ if .Result.torrent_size }}{{ .Result.torrent_size }}{{ else }}{{ .Result.torrentio_size }}{{ end }}"
     quality:
@@ -125,3 +125,4 @@ search:
       text: "30"
     leechers:
       text: "0"
+
