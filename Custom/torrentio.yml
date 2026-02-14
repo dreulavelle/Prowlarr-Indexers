@@ -10,6 +10,7 @@ testlinktorrent: false
 requestDelay: 2
 links:
   - https://torrentio.strem.fun/
+  - https://torrentio.withoutthefuss.dpdns.org/
 
 caps:
   categories:
@@ -105,7 +106,10 @@ search:
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
     infohash:
-      selector: infoHash
+      selector: url
+      filters:
+        - name: split
+          args: ["/", 6]
     seeders:
       selector: title
       filters:
