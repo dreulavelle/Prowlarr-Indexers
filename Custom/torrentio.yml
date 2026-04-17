@@ -105,7 +105,10 @@ search:
     category:
       text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
     infohash:
-      selector: infoHash
+      selector: url
+      filters:
+        - name: regexp
+          args: "/([a-f0-9]{40})"
     seeders:
       selector: title
       filters:
