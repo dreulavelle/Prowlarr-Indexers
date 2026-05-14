@@ -109,9 +109,6 @@ search:
     leechers:
       selector: "torznab|attr[name=peers]"
       attribute: value
-      filters:
-        - name: math
-          args: ["-", "{{ .Result.seeders }}"]
     imdb:
       selector: "torznab|attr[name=imdbid]"
       attribute: value
@@ -124,7 +121,7 @@ search:
       selector: pubDate
       filters:
         - name: dateparse
-          args: "Mon, 02 Jan 2006 15:04:05 -0700"
+          args: "ddd, dd MMM yyyy HH:mm:ss zzz"
     downloadvolumefactor:
       text: "0"
     uploadvolumefactor:
