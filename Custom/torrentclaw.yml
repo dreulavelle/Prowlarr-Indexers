@@ -1,0 +1,131 @@
+---
+id: torrentclaw
+name: TorrentClaw
+description: "TorrentClaw aggregates 10+ public torrent sources and enriches each release with TrueSpec metadata (real audio, subtitles, codec, HDR) and a 0-100 quality score. Public Torznab feed; free API key (registration only)."
+language: en-US
+type: public
+encoding: UTF-8
+followredirect: false
+testlinktorrent: false
+requestDelay: 2
+links:
+  - https://torrentclaw.com/
+
+caps:
+  categorymappings:
+    - {id: 2000, cat: Movies, desc: "Movies"}
+    - {id: 2030, cat: Movies/SD, desc: "Movies SD"}
+    - {id: 2040, cat: Movies/HD, desc: "Movies HD"}
+    - {id: 2045, cat: Movies/UHD, desc: "Movies UHD (4K)"}
+    - {id: 5000, cat: TV, desc: "TV"}
+    - {id: 5030, cat: TV/SD, desc: "TV SD"}
+    - {id: 5040, cat: TV/HD, desc: "TV HD"}
+    - {id: 5045, cat: TV/UHD, desc: "TV UHD (4K)"}
+
+  modes:
+    search: [q]
+    movie-search: [q, imdbid, tmdbid]
+    tv-search: [q, imdbid, season, ep]
+
+  allowrawsearch: false
+
+settings:
+  - name: info_overview
+    type: info
+    label: "About TorrentClaw"
+    default: "TorrentClaw exposes a standard Torznab feed at /api/v1/torznab. Free registration grants API access. Create a key at https://torrentclaw.com/account/api-keys."
+
+  - name: apikey
+    type: text
+    label: "API key (free, registration only)"
+    default: ""
+
+  - name: info_truespec
+    type: info
+    label: "TrueSpec verification tags"
+    default: "Verified releases carry [TC-NN] (quality score 0-100) and [TrueSpec] tags in the title. Suggested Sonarr/Radarr Custom Formats: regex \\[TrueSpec\\] → +1000, \\[TC-[89]\\d\\] → +500, \\[REAL-\\d+p\\] → -500 (title mis-states real resolution)."
+
+  - name: info_validation
+    type: info
+    label: "Validation settings (optional)"
+
+  - name: validate_imdb_movie
+    type: text
+    label: "IMDB ID of a movie that must exist in the indexer (Radarr validation)"
+    default: "tt0468569"
+
+  - name: validate_imdb_tv
+    type: text
+    label: "IMDB ID of a TV show that must exist in the indexer (Sonarr validation)"
+    default: "tt0944947"
+
+search:
+  headers:
+    User-Agent:
+      - "Prowlarr"
+    Authorization:
+      - "{{ if .Config.apikey }}Bearer {{ .Config.apikey }}{{ end }}"
+
+  paths:
+    - path: "api/v1/torznab"
+      method: get
+      response:
+        type: xml
+
+  inputs:
+    t: "{{ if .Query.IMDBID }}{{ if .Query.Season }}tvsearch{{ else }}movie{{ end }}{{ else if .Query.TMDBID }}movie{{ else if .Query.Season }}tvsearch{{ else }}search{{ end }}"
+    q: "{{ .Keywords }}"
+    imdbid: "{{ .Query.IMDBID }}"
+    tmdbid: "{{ .Query.TMDBID }}"
+    season: "{{ .Query.Season }}"
+    ep: "{{ .Query.Ep }}"
+    limit: "50"
+
+  rows:
+    selector: "channel > item"
+    missingAttributeEqualsNoResults: true
+
+  fields:
+    title:
+      selector: title
+    details:
+      text: "{{ .Config.sitelink }}"
+    download:
+      selector: link
+    magnet:
+      selector: link
+    infohash:
+      selector: "torznab|attr[name=infohash]"
+      attribute: value
+    category:
+      selector: "torznab|attr[name=category]"
+      attribute: value
+    size:
+      selector: "torznab|attr[name=size]"
+      attribute: value
+    seeders:
+      selector: "torznab|attr[name=seeders]"
+      attribute: value
+    leechers:
+      selector: "torznab|attr[name=peers]"
+      attribute: value
+      filters:
+        - name: math
+          args: ["-", "{{ .Result.seeders }}"]
+    imdb:
+      selector: "torznab|attr[name=imdbid]"
+      attribute: value
+      optional: true
+    tmdbid:
+      selector: "torznab|attr[name=tmdbid]"
+      attribute: value
+      optional: true
+    date:
+      selector: pubDate
+      filters:
+        - name: dateparse
+          args: "Mon, 02 Jan 2006 15:04:05 -0700"
+    downloadvolumefactor:
+      text: "0"
+    uploadvolumefactor:
+      text: "1"
