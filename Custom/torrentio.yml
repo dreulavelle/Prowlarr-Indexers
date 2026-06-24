@@ -108,8 +108,8 @@ search:
     infohash:
       selector: url
       filters:
-        - name: split
-          args: ["/", 6]
+        - name: regexp
+          args: "/([a-f0-9]{40})"
     seeders:
       selector: title
       filters:
