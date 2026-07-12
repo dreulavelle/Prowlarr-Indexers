@@ -31,7 +31,7 @@ caps:
   modes:
     search: [q]
     movie-search: [q, imdbid]
-    tv-search: [q, season, ep]
+    tv-search: [q, season, ep, imdbid]
   allowrawsearch: false
 
 settings:
@@ -53,7 +53,9 @@ search:
         noResultsMessage: '{"data":{"items":[],"total_items":0}}'
       categories: [Movies]
 
-    - path: /v0/torrents?no_missing_size=1&sid={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}"
+    # Sonarr can retry TV searches without an IMDb ID. Use a known-empty ID
+    # for those real searches so they cannot return the validation series.
+    - path: /v0/torrents?no_missing_size=1&sid={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ end }}{{ if and .Query.Season (eq .Query.IMDBID .False) }}tt0000000{{ else }}{{ end }}{{ if and (eq .Query.IMDBID .False) (eq .Query.Season .False) }}{{ .Config.validate_imdb_tv }}{{ else }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}
       method: get
       response:
         type: json
