@@ -1,0 +1,126 @@
+id: aiostreams-api
+name: AIOStreams (API)
+description: "A custom Prowlarr indexer for the AIOStreams torrent/debrid search add-on using the Search API"
+language: en-US
+type: public
+encoding: UTF-8
+followredirect: false
+testlinktorrent: false
+requestDelay: 5
+links:
+  - http://aiostreams:3000
+  - https://aiostreams.viren070.me
+  - https://aiostreamsfortheweak.nhyira.dev
+  - https://aiostreamsfortheweebs.midnightignite.me
+  - https://aiostreams.fusionapp.dev/
+  - https://aio.atbphosting.com
+  - https://aiostreams.12312023.xyz/
+  - https://aiostreams.stremiofr.com/
+  - https://aiostreams.elfhosted.com/
+  - https://aiostreams.stremio.ru/
+  - https://aio.viren070.me
+caps:
+  categories:
+    Movies: Movies
+    TV: TV
+  modes:
+    search: [q]
+    movie-search: [q, imdbid]
+    tv-search: [q, imdbid, season, ep]
+  allowrawsearch: false
+settings:
+  - name: auth
+    type: text
+    label: Base64 config (uuid:password in base64)
+  - name: validate_imdb_movie
+    type: text
+    label: IMDB ID of Movie to use for Radarr validation (must exist in indexer)
+    default: "tt0137523"
+  - name: validate_imdb_tv
+    type: text
+    label: IMDB ID TV show to use for Sonarr validation (must exist in indexer)
+    default: "tt9288030"
+search:
+  headers:
+    Authorization: ["Basic {{ .Config.auth }}"]
+  paths:
+    - path: /api/v1/search?type=movie&id={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_movie }}{{ end }}
+      method: get
+      response:
+        type: json
+        noResultsMessage: '"results": []'
+      categories: [Movies]
+
+    - path: /api/v1/search?type=series&id={{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Config.validate_imdb_tv }}{{ end }}:{{ if .Query.Season }}{{ .Query.Season }}{{ else }}1{{ end }}:{{ if .Query.Ep }}{{ .Query.Ep }}{{ else }}1{{ end }}
+      method: get
+      response:
+        type: json
+        noResultsMessage: '"results": []'
+      categories: [TV]
+  rows:
+    selector: data.results
+    missingAttributeEqualsNoResults: true
+
+  fields:
+    title:
+      selector: filename
+      default: "Unknown Title"
+      filters:
+        - name: trim
+    title_normalized:
+      text: "{{ .Result.title }}"
+      filters:
+        - name: re_replace
+          args: ["(?i)Season[\\s._-]*(\\d+)[^0-9]+Episode[\\s._-]*(\\d+)", "S$1E$2"]
+        - name: re_replace
+          args: ["(?i)\\b(\\d{1,2})x(\\d{1,3})\\b", "S$1E$2"]
+        - name: re_replace
+          args: ["(?i)\\bS(?:eason)?[\\s._-]*(\\d+)[\\s._-]*Ep(?:isode)?[\\s._-]*(\\d+)\\b", "S$1E$2"]
+        - name: re_replace
+          args: ["(?i)\\bEP(?:isode)?[\\s._-]*(\\d{1,4})\\b", "S01E$1"]
+        - name: re_replace
+          args: ["(?i)\\b(?!(?:19|20)\\d{2})(\\d{3,4})(?!p)\\b", "S01E$1"]
+    year:
+      selector: filename
+      optional: true
+      filters:
+        - name: regexp
+          args: "(\\b(19|20)\\d{2}\\b)"
+    date_in_days:
+      selector: age
+      optional: true
+    date:
+      text: "{{ if .Result.date_in_days }}{{ .Result.date_in_days }} days{{ else }}36500 days{{ end }}"
+      filters:
+        - name: timeago
+    category_is_tv_show:
+      text: "{{ .Result.title_normalized }}"
+      filters:
+        - name: regexp
+          args: "\\b(S\\d+(?:E\\d+)?)\\b"
+    category:
+      text: "{{ if .Result.category_is_tv_show }}TV{{ else }}Movies{{ end }}"
+    infohash_selector:
+      optional: true
+      selector: infoHash
+    infohash:
+      text: "{{ if .Result.infohash_selector }}{{ .Result.infohash_selector }}{{ else }}0000000000000000000000000000000000000000{{ end }}"
+    size_raw:
+      optional: true
+      selector: size
+    size:
+      text: "{{ if .Result.size_raw }}{{ .Result.size_raw }}{{ else }}0{{ end }}"
+    quality:
+      selector: filename
+      optional: true
+      default: "1080p"
+      filters:
+        - name: regexp
+          args: "\\b2160p|1080p|720p|480p\\b"
+    seed_count:
+      selector: seeders
+      optional: true
+    seeders:
+      text: "{{ if .Result.seed_count }}{{ .Result.seed_count }}{{ else }}13{{ end }}"
+    leechers:
+      text: "37"
